@@ -23,7 +23,7 @@ public class TextureLoader
 
 	public TextureLoader()
 	{
-		textures = new BufferedImage[11][16][4];
+		textures = new BufferedImage[12][16][4];
 		icons = new BufferedImage[10];
 		grounds = new BufferedImage[1][1][4];
 		CBCurves = new BufferedImage[16][4];
@@ -110,6 +110,7 @@ public class TextureLoader
 		textures[8] = loadTexture("Rock", 1, 1, 1);
 		textures[9] = loadTexture("factory", 1, 1, 1);
 		textures[10] = loadTexture("smeltery", 1, 1, 1);
+		textures[11] = loadTexture("generator", 1, 9, 9);
 		// Building.clone();
 	}
 
@@ -235,8 +236,10 @@ public class TextureLoader
 			return textures[8][0][0];
 		case 8:
 			return textures[9][0][0];
+		case 9:
+			return textures[11][0][Animator.fastAnimation % 9];
 		default:
-			return new BufferedImage(0, 0, BufferedImage.TYPE_INT_ARGB);
+			return new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 		}
 	}
 

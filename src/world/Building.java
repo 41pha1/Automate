@@ -239,6 +239,9 @@ public class Building implements Serializable
 		case 8:
 			clone = new Factory(x, y);
 			break;
+		case 9:
+			clone = new Generator(x, y);
+			break;
 		default:
 			clone = new Building(x, y);
 		}

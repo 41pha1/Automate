@@ -11,6 +11,7 @@ import utility.Vector2D;
 import world.Building;
 import world.ConveyorBelt;
 import world.Factory;
+import world.Generator;
 import world.Mine;
 import world.RoboArm;
 import world.Smeltery;
@@ -28,6 +29,7 @@ public class Store
 		addCategory(new Building[] { new Mine(), new Smeltery() }, "Resources");
 		addCategory(new Building[] { new RoboArm(), new ConveyorBelt() }, "Transportation");
 		addCategory(new Building[] { new Factory() }, "Production");
+		addCategory(new Building[] { new Generator() }, "Power");
 		addButtons();
 	}
 
