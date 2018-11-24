@@ -117,7 +117,7 @@ public class Mine extends Building
 	{
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Serial", Font.BOLD, 15));
-		g.drawString("Currently mining: " + mining.getName(), 10, 20);
+		g.drawString("Currently mining: " + mining, 10, 20);
 		int cx = 250;
 		int cy = 10;
 		mining.renderAt(g, cx, cy, 128, 128);
@@ -204,7 +204,7 @@ public class Mine extends Building
 		if ((newSelection >= 0 && newSelection < mineable.size()))
 		{
 			b.setFont(new Font("Serial", Font.PLAIN, 18));
-			b.drawString(new Cargo(0, 0, mineable.get(newSelection)).getName(), 220, 20);
+			b.drawString(new Cargo(0, 0, mineable.get(newSelection)).toString(), 220, 20);
 			b.drawLine(210, 30, 350, 30);
 			b.setFont(new Font("Serial", Font.PLAIN, 14));
 			b.drawString("Ground multiplier: " + (int) (Simulation.map.getTile(x, y).r.res[newSelection] * 50), 220,

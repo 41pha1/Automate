@@ -149,7 +149,8 @@ public class Map implements Serializable
 				}
 				tiles[x][y] = new Tile(x, y, ID, terrain);
 				// if(Math.random()>0.8)tiles[x][y].b = new Tree(x,y);
-				// if(Math.random()>0.95)tiles[x][y].b = new Rock(x,y);
+				if (Math.random() > 0.95)
+					tiles[x][y].b = new Rock(x, y);
 			}
 		}
 		tiles[60][55].b = new Rocket(60, 55);

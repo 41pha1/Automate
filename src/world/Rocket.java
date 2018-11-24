@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
+import data.Gastank;
 import game.Simulation;
 import gui.Gui;
 import gui.ScrollBar;
@@ -15,17 +16,16 @@ public class Rocket extends Building
 	private static final long serialVersionUID = -6160063933783878753L;
 	public static final int ID = 5;
 	public Cargo c;
-	public static int[] materials;
+	public Gastank H, O;
+	public int[] materials;
 	static BufferedImage body;
-	static ScrollBar sb;
-
-	public Rocket()
-	{
-		sb = new ScrollBar(0, 0, 12, 120);
-	}
+	ScrollBar sb;
 
 	public Rocket(int x, int y)
 	{
+		H = new Gastank(0, 4000, 10000);
+		O = new Gastank(1, 6000, 10000);
+		sb = new ScrollBar(0, 0, 12, 120);
 		this.x = x;
 		this.y = y;
 		this.built = true;
@@ -103,10 +103,12 @@ public class Rocket extends Building
 		Graphics2D b = body.createGraphics();
 		b.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		b.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		int yoff = -sb.ca;
-		sb.update(Gui.getLengthOfInventory(materials) * 50, 380, 15);
+		sb.update(Gui.getLengthOfInventory(materials) / 4 * 50 - 100, 380, 15);
 		sb.render(b);
-		Gui.showInventory(this, b, 0, 50 + yoff);
+		int yoff = -sb.ca;
+		Gui.showInventory(materials, b, 0, 10 + yoff);
+		H.render(b, 240, 10);
+		O.render(b, 310, 10);
 		g.drawImage(body, posx, posy, null);
 	}
 

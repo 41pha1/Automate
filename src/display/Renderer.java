@@ -13,8 +13,6 @@ import gui.Gui;
 import gui.Store;
 import launcher.Main;
 import utility.Counter;
-import world.Cargo;
-import world.Rocket;
 
 public class Renderer
 {
@@ -50,7 +48,7 @@ public class Renderer
 		if (Simulation.map.selectedEntity != -1)
 		{
 			if (!Simulation.map.isEntityBuilding())
-				Gui.showGui(Simulation.map.entities.get(Simulation.map.selectedEntity), g);
+				Simulation.map.entities.get(Simulation.map.selectedEntity).showGui(g);
 			if (Simulation.map.isEntityBuilding())
 			{
 				Store.render(g);
@@ -85,22 +83,6 @@ public class Renderer
 			int width = g.getFontMetrics().stringWidth(text);
 			int height = g.getFontMetrics().getHeight();
 			g.drawString(text, Frame.width / 2 - width / 2, Frame.height / 2 - height / 2);
-		}
-	}
-
-	public static void showRes(Graphics2D g)
-	{
-		g.setColor(Color.WHITE);
-		Font font = new Font("Serial", Font.PLAIN, 20);
-		g.setFont(font);
-		int k = 0;
-		for (int i = 0; i < Rocket.materials.length - 1; i++)
-		{
-			if (i > 0)
-			{
-				g.drawString("" + Rocket.materials[i] + " " + new Cargo(0, 0, i).getName(), 10, 100 + k);
-				k += 25;
-			}
 		}
 	}
 

@@ -207,7 +207,7 @@ public class Factory extends Building
 		if ((newSelection >= 0 && newSelection < produceable.size()))
 		{
 			b.setFont(new Font("Serial", Font.PLAIN, 18));
-			b.drawString(new Cargo(0, 0, produceable.get(newSelection)).getName(), 220, 20);
+			b.drawString(new Cargo(0, 0, produceable.get(newSelection)).toString(), 220, 20);
 			b.drawLine(210, 30, 350, 30);
 			int i = 0;
 			for (Vector2D cost : Cargo.getProductionCost(produceable.get(newSelection)))
@@ -245,7 +245,7 @@ public class Factory extends Building
 	{
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Serial", Font.BOLD, 15));
-		g.drawString("Currently assembling: " + producing.getName(), 10, 20);
+		g.drawString("Currently assembling: " + producing, 10, 20);
 		int cx = 250;
 		int cy = 10;
 		producing.renderAt(g, cx, cy, 128, 128);

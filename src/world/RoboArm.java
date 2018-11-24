@@ -125,6 +125,6 @@ public class RoboArm extends Building
 			if (img > 15)
 				img = 31 - img;
 		}
-		g.drawImage(TextureLoader.textures[3][dir][img], x - 89, y - 55, null);
+		g.drawImage(TextureLoader.textures[3][dir][img], x - 73, y - 65, null);
 	}
 }

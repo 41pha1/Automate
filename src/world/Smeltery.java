@@ -125,7 +125,7 @@ public class Smeltery extends Building
 	{
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Serial", Font.BOLD, 15));
-		g.drawString("Currently smelting: " + smelting.getName(), 10, 20);
+		g.drawString("Currently smelting: " + smelting, 10, 20);
 		int cx = 250;
 		int cy = 10;
 		smelting.renderAt(g, cx, cy, 128, 128);
@@ -211,7 +211,7 @@ public class Smeltery extends Building
 		if ((newSelection >= 0 && newSelection < smeltable.size()))
 		{
 			b.setFont(new Font("Serial", Font.PLAIN, 18));
-			b.drawString(new Cargo(0, 0, smeltable.get(newSelection)).getName(), 220, 20);
+			b.drawString(new Cargo(0, 0, smeltable.get(newSelection)).toString(), 220, 20);
 			b.drawLine(210, 30, 350, 30);
 		}
 		save.update(320 + posx, posy - 40);

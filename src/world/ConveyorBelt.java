@@ -3,6 +3,7 @@ package world;
 import java.awt.Graphics2D;
 
 import game.Simulation;
+import texture.TextureLoader;
 
 public class ConveyorBelt extends Building
 {
@@ -465,6 +466,12 @@ public class ConveyorBelt extends Building
 	public Cargo getCargo()
 	{
 		return c;
+	}
+
+	@Override
+	public void render(Graphics2D g, int x, int y)
+	{
+		g.drawImage(TextureLoader.getTexture(this), x - 15, y - 65, null);
 	}
 
 	@Override

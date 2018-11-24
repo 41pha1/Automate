@@ -13,7 +13,6 @@ import world.ConveyorBelt;
 import world.Factory;
 import world.Mine;
 import world.RoboArm;
-import world.Rocket;
 import world.Smeltery;
 
 public class Store
@@ -26,12 +25,9 @@ public class Store
 	public Store()
 	{
 		cs = new ArrayList<Category>();
-		Building[] elements1 = { new Mine(), new Rocket(), new Smeltery() };
-		addCategory(elements1, "Resources");
-		Building[] elements2 = { new RoboArm(), new ConveyorBelt() };
-		addCategory(elements2, "Transportation");
-		Building[] elements3 = { new Factory() };
-		addCategory(elements3, "Production");
+		addCategory(new Building[] { new Mine(), new Smeltery() }, "Resources");
+		addCategory(new Building[] { new RoboArm(), new ConveyorBelt() }, "Transportation");
+		addCategory(new Building[] { new Factory() }, "Production");
 		addButtons();
 	}
 

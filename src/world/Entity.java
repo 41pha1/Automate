@@ -1,6 +1,7 @@
 package world;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.io.Serializable;
 
 import data.Tasks;
@@ -16,6 +17,7 @@ public class Entity implements Serializable
 	int dir;
 	float speed = 0.02f;
 	boolean moving;
+
 	public Entity(float x, float y, int id)
 	{
 		dir = 0;
@@ -24,10 +26,17 @@ public class Entity implements Serializable
 		this.ID = id;
 		moving = false;
 	}
-	public void renderSelection(Graphics g) 
+
+	public void showGui(Graphics2D g)
 	{
-		
+
 	}
+
+	public void renderSelection(Graphics g)
+	{
+
+	}
+
 	public Entity(float x, float y, int id, int d)
 	{
 		dir = d;
@@ -36,41 +45,50 @@ public class Entity implements Serializable
 		this.ID = id;
 		moving = false;
 	}
+
 	public void setActive(boolean b)
 	{
-		
+
 	}
+
 	public void render(Graphics g)
 	{
-		
+
 	}
+
 	public void update()
 	{
-		
+
 	}
+
 	public Tasks getTasks()
 	{
 		return new Tasks(ID);
 	}
+
 	public boolean isSelected(float d)
 	{
-		return (Math.abs(Picker.pick.x-x)<d)&&(Math.abs(Picker.pick.y-y)<d);
+		return (Math.abs(Picker.pick.x - x) < d) && (Math.abs(Picker.pick.y - y) < d);
 	}
+
 	public Vector2D getPosToRenderAt()
 	{
-		return new Vector2D(0,0);
+		return new Vector2D(0, 0);
 	}
+
 	public String getName()
 	{
 		return "NoName";
 	}
+
 	public float getDisToMouse()
 	{
-		float xd = Math.abs(Picker.pick.x-x);
-		float yd = Math.abs(Picker.pick.y-y);
-		return (float)Math.sqrt((xd*xd)+(yd*yd));
+		float xd = Math.abs(Picker.pick.x - x);
+		float yd = Math.abs(Picker.pick.y - y);
+		return (float) Math.sqrt((xd * xd) + (yd * yd));
 	}
-	public int[] getInventory() 
+
+	public int[] getInventory()
 	{
 		return new int[10];
 	}
