@@ -41,6 +41,7 @@ public class Factory extends Building
 		produceable.add(Cargo.WIRE);
 		produceable.add(Cargo.CABLE);
 		produceable.add(Cargo.COIL);
+		produceable.add(Cargo.PIPE);
 		locked = new boolean[produceable.size()];
 		for (int i = 0; i < produceable.size(); i++)
 		{

@@ -30,7 +30,7 @@ public class Rocket extends Building
 		this.y = y;
 		this.built = true;
 		materials = new int[Cargo.DIFFERENTCARGOS];
-		for (int j = 1; j < materials.length - 1; j++)
+		for (int j = 1; j < materials.length; j++)
 		{
 			materials[j] = 1000;
 		}
@@ -103,7 +103,7 @@ public class Rocket extends Building
 		Graphics2D b = body.createGraphics();
 		b.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		b.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		sb.update(Gui.getLengthOfInventory(materials) / 4 * 50 - 100, 380, 15);
+		sb.update(Gui.getLengthOfInventory(materials) / 4 * 50 - 50, 380, 15);
 		sb.render(b);
 		int yoff = -sb.ca;
 		Gui.showInventory(materials, b, 0, 10 + yoff);

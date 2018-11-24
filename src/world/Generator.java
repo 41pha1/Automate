@@ -91,6 +91,7 @@ public class Generator extends Building
 		price[Cargo.IRON] = 6;
 		price[Cargo.MOTOR] = 1;
 		price[Cargo.CABLE] = 2;
+		price[Cargo.PIPE] = 2;
 		return price;
 	}
 

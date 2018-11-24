@@ -13,8 +13,8 @@ public class Cargo implements Serializable
 	private static final long serialVersionUID = 1302781432064090240L;
 	public int x;
 	public static final int COAL = 1, IRON_ORE = 2, STONE = 3, LOG = 4, IRON = 5, MOTOR = 6, PROCESSOR = 7, RUBBER = 8,
-			COPPER = 9, WIRE = 10, CABLE = 11, COIL = 12, COPPER_ORE = 13;
-	public static int DIFFERENTCARGOS = 14;
+			COPPER = 9, WIRE = 10, CABLE = 11, COIL = 12, COPPER_ORE = 13, PIPE = 14;
+	public static int DIFFERENTCARGOS = 15;
 	public int y;
 	float vx, vy;
 	public int ID, id;
@@ -133,31 +133,28 @@ public class Cargo implements Serializable
 	public static ArrayList<Vector2D> getProductionCost(int ID)
 	{
 		ArrayList<Vector2D> cost = new ArrayList<Vector2D>();
-		if (ID == MOTOR)
+		switch (ID)
 		{
+		case MOTOR:
 			cost.add(new Vector2D(IRON, 2));
 			cost.add(new Vector2D(COIL, 1));
 			cost.add(new Vector2D(CABLE, 1));
 			return cost;
-		}
-		if (ID == WIRE)
-		{
+		case WIRE:
 			cost.add(new Vector2D(COPPER, 1));
 			return cost;
-
-		}
-		if (ID == CABLE)
-		{
+		case CABLE:
 			cost.add(new Vector2D(WIRE, 1));
 			cost.add(new Vector2D(RUBBER, 1));
 			return cost;
-		}
-		if (ID == COIL)
-		{
+		case COIL:
 			cost.add(new Vector2D(WIRE, 2));
 			return cost;
+		case PIPE:
+			cost.add(new Vector2D(IRON, 2));
+		default:
+			return cost;
 		}
-		return cost;
 	}
 
 	@Override
@@ -177,32 +174,38 @@ public class Cargo implements Serializable
 
 	public static String getName(int ID)
 	{
-		if (ID == COAL)
+		switch (ID)
+		{
+		case COAL:
 			return "Coal";
-		if (ID == IRON_ORE)
+		case IRON_ORE:
 			return "Iron Ore";
-		if (ID == STONE)
+		case STONE:
 			return "Stone";
-		if (ID == LOG)
+		case LOG:
 			return "Log";
-		if (ID == IRON)
+		case IRON:
 			return "Iron";
-		if (ID == MOTOR)
+		case MOTOR:
 			return "Motor";
-		if (ID == PROCESSOR)
+		case PROCESSOR:
 			return "Processor";
-		if (ID == RUBBER)
+		case RUBBER:
 			return "Rubber";
-		if (ID == COPPER)
+		case COPPER:
 			return "Copper";
-		if (ID == WIRE)
+		case WIRE:
 			return "Wire";
-		if (ID == CABLE)
+		case CABLE:
 			return "Cable";
-		if (ID == COIL)
+		case COIL:
 			return "Coil";
-		if (ID == COPPER_ORE)
+		case COPPER_ORE:
 			return "Copper Ore";
-		return "None";
+		case PIPE:
+			return "Pipe";
+		default:
+			return "Unknown";
+		}
 	}
 }

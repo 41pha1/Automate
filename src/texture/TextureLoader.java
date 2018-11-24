@@ -58,6 +58,7 @@ public class TextureLoader
 		cargo[Cargo.COAL] = loadImage("Coal");
 		cargo[Cargo.IRON_ORE] = loadImage("IronOre");
 		cargo[Cargo.COPPER_ORE] = loadImage("CopperOre");
+		cargo[Cargo.PIPE] = loadImage("pipe");
 
 	}
 
