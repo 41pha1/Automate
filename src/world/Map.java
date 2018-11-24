@@ -6,6 +6,7 @@ import java.awt.RenderingHints;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import data.OpenSimplexNoise;
 import data.Schematic;
 import data.Transformation;
 import display.Frame;
@@ -117,18 +118,14 @@ public class Map implements Serializable
 	{
 		if (x < 0 || x >= width || y < 0 || y >= height)
 		{
-			return new Tile(0, 0, 0, new float[Tile.detail][Tile.detail]);
+			return new Tile(0, 0, 0);
 		}
 		return tiles[x][y];
 	}
 
 	public Tile getTile(Vector2D v)
 	{
-		if (v.x < 0 || v.x >= width || v.y < 0 || v.y >= height)
-		{
-			return new Tile(0, 0, 0, new float[Tile.detail][Tile.detail]);
-		}
-		return tiles[(int) v.x][(int) v.y];
+		return getTile((int) v.x, (int) v.y);
 	}
 
 	public void generate()
@@ -139,18 +136,7 @@ public class Map implements Serializable
 			for (int y = 0; y < height; y++)
 			{
 				int ID = 1;
-				float[][] terrain = new float[Tile.detail][Tile.detail];
-				for (int i = 0; i < Tile.detail; i++)
-				{
-					for (int j = 0; j < Tile.detail; j++)
-					{
-						terrain[i][j] = (float) OSN.eval(((x * Tile.detail) + i) / 50f, ((y * Tile.detail) + j) / 50f);
-					}
-				}
-				tiles[x][y] = new Tile(x, y, ID, terrain);
-				// if(Math.random()>0.8)tiles[x][y].b = new Tree(x,y);
-				if (Math.random() > 0.95)
-					tiles[x][y].b = new Rock(x, y);
+				tiles[x][y] = new Tile(x, y, ID);
 			}
 		}
 		tiles[60][55].b = new Rocket(60, 55);

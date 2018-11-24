@@ -1,6 +1,5 @@
 package world;
 
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.Serializable;
 
@@ -11,16 +10,14 @@ import texture.TextureLoader;
 public class Tile implements Serializable
 {
 	private static final long serialVersionUID = 6302849209085209706L;
-	public static int detail = 16;
 	public int x, y;
 	public int ID;
 	public Building b;
 	public Res r;
 	public int tex;
-	public float[][] terrain;
 	int ix, iy;
 
-	public Tile(int x, int y, int ID, float[][] terrain)
+	public Tile(int x, int y, int ID)
 	{
 		this.x = x;
 		this.y = y;
@@ -28,12 +25,11 @@ public class Tile implements Serializable
 		tex = (int) (Math.random() * 4);
 		iy = 0;
 		this.ID = ID;
-		this.terrain = terrain;
 		b = new Building(x, y);
 		r = new Res(ID);
 	}
 
-	public void render(Graphics g)
+	public void render(Graphics2D g)
 	{
 		int size = (int) Simulation.map.t.getSize();
 		float x = (Simulation.map.t.getX() + this.x) * size;
