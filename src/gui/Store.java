@@ -15,6 +15,7 @@ import world.Generator;
 import world.Mine;
 import world.RoboArm;
 import world.Smeltery;
+import world.StorePipe;
 
 public class Store
 {
@@ -27,7 +28,7 @@ public class Store
 	{
 		cs = new ArrayList<Category>();
 		addCategory(new Building[] { new Mine(), new Smeltery() }, "Resources");
-		addCategory(new Building[] { new RoboArm(), new ConveyorBelt() }, "Transportation");
+		addCategory(new Building[] { new RoboArm(), new ConveyorBelt(), new StorePipe() }, "Transportation");
 		addCategory(new Building[] { new Factory() }, "Production");
 		addCategory(new Building[] { new Generator() }, "Power");
 		addButtons();

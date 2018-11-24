@@ -20,6 +20,7 @@ public class TextureLoader
 	public static BufferedImage[] cargo;
 	public static BufferedImage[] rocketAnimation;
 	public static BufferedImage[][][] grounds;
+	public static BufferedImage[] pipes;
 
 	public TextureLoader()
 	{
@@ -29,6 +30,7 @@ public class TextureLoader
 		CBCurves = new BufferedImage[16][4];
 		astronaut = new BufferedImage[3][4][8];
 		cargo = new BufferedImage[Cargo.DIFFERENTCARGOS];
+		pipes = new BufferedImage[11];
 		rocketAnimation = new BufferedImage[101];
 		loadAnimations();
 		loadCargo();
@@ -36,6 +38,12 @@ public class TextureLoader
 		loadGrounds();
 		loadCBcurves();
 		loadIcons();
+		loadPipes();
+	}
+
+	public static void loadPipes()
+	{
+		pipes = loadTextures("Pipes", 11, 1, 11);
 	}
 
 	public static void loadGrounds()

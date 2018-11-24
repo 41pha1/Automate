@@ -47,7 +47,7 @@ public class InfoTag
 			}
 			k++;
 		}
-		if (j == 2)
+		if (j <= 2)
 			yoff = 0;
 		else if (((j * 32) - 48) <= -yoff)
 			dir = 1;

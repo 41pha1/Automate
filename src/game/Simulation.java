@@ -181,9 +181,18 @@ public class Simulation
 		if (Mouse.left)
 		{
 			Vector2D pos = Picker.pick;
-			if (Picker.isOverMap() && !map.getTile((int) pos.x, (int) pos.y).b.built
-					&& !Simulation.map.schematic.getBuilding((int) pos.x, (int) pos.y).built)
-				Store.place(pos);
+			if (Store.selectedCategory != -1 && Store.cs.get(Store.selectedCategory).selected != -1
+					&& Store.cs.get(Store.selectedCategory).slots.get(Store.cs.get(Store.selectedCategory).selected).b
+							.getID() == 10) // PIPE SELECTED
+			{
+				if (Picker.isOverMap())
+					Simulation.map.getTile(pos).piped = true;
+			} else
+			{
+				if (Picker.isOverMap() && !map.getTile((int) pos.x, (int) pos.y).b.built
+						&& !Simulation.map.schematic.getBuilding((int) pos.x, (int) pos.y).built)
+					Store.place(pos);
+			}
 		}
 		if (Keyboard.r)
 		{
