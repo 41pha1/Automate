@@ -6,7 +6,7 @@ import java.awt.Graphics2D;
 import java.io.Serializable;
 
 import animation.Animator;
-import data.Gastank;
+import data.Tank;
 import data.Tasks;
 import game.Simulation;
 import gui.Gui;
@@ -29,12 +29,12 @@ public class Human extends Entity implements Serializable
 	public Building TB;
 	public int[] inventory;
 	public String name;
-	public Gastank O;
+	public Tank O;
 
 	public Human(float x, float y, int id, int d)
 	{
 		super(x, y, id, d);
-		O = new Gastank(1, 1000, 1000);
+		O = new Tank(1, 1000, 1000);
 		name = NameGenerator.getName();
 		t = new Tasks(id);
 		inventory = new int[Cargo.DIFFERENTCARGOS];

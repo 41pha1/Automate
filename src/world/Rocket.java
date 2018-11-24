@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
-import data.Gastank;
+import data.Tank;
 import game.Simulation;
 import gui.Gui;
 import gui.ScrollBar;
@@ -16,15 +16,15 @@ public class Rocket extends Building
 	private static final long serialVersionUID = -6160063933783878753L;
 	public static final int ID = 5;
 	public Cargo c;
-	public Gastank H, O;
+	public Tank H, O;
 	public int[] materials;
 	static BufferedImage body;
 	ScrollBar sb;
 
 	public Rocket(int x, int y)
 	{
-		H = new Gastank(0, 4000, 10000);
-		O = new Gastank(1, 6000, 10000);
+		H = new Tank(0, 5000, 10000);
+		O = new Tank(1, 5000, 20000);
 		sb = new ScrollBar(0, 0, 12, 120);
 		this.x = x;
 		this.y = y;

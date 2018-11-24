@@ -82,6 +82,7 @@ public class TextureLoader
 		icons[4] = loadImage("right");
 		icons[5] = loadImage("left");
 		icons[6] = loadImage("save");
+		icons[7] = loadImage("arrow");
 	}
 
 	public static void loadCBcurves()
@@ -237,7 +238,7 @@ public class TextureLoader
 		case 8:
 			return textures[9][0][0];
 		case 9:
-			return textures[11][0][Animator.fastAnimation % 9];
+			return textures[11][0][Animator.veryFastAnimation / 2 % 8];
 		default:
 			return new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 		}
