@@ -72,6 +72,16 @@ public class Building implements Serializable
 		return new Cargo(0, 0, 0);
 	}
 
+	public boolean connectedToPipes()
+	{
+		return false;
+	}
+
+	public float getGas(int type, float amount)
+	{
+		return 0;
+	}
+
 	public int getID()
 	{
 		return -1;

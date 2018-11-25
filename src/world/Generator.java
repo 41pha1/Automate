@@ -5,8 +5,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import data.Tank;
+import game.Simulation;
 import gui.Gui;
 import texture.TextureLoader;
 
@@ -38,6 +41,12 @@ public class Generator extends Building
 	}
 
 	@Override
+	public boolean connectedToPipes()
+	{
+		return true;
+	}
+
+	@Override
 	public int getID()
 	{
 		return ID;
@@ -46,11 +55,13 @@ public class Generator extends Building
 	@Override
 	public void update()
 	{
+		if (O.amount < O.capacity || H.amount < H.capacity)
+			checkForConnectedPipes();
 		TimeRemaining--;
 		if (TimeRemaining <= 0)
 		{
 			TimeRemaining = TimePerReaktion;
-			if (O.amount > 2 && H.amount > 1)
+			if (O.amount >= 2 && H.amount >= 1 && H2O.capacity - H2O.amount >= 1)
 			{
 				O.amount -= 2;
 				H.amount -= 1;
@@ -58,6 +69,72 @@ public class Generator extends Building
 				Energy += EnergyPerReaktion;
 			}
 		}
+	}
+
+	public void checkForConnectedPipes()
+	{
+		if (Simulation.map.getTile(x, y).piped)
+		{
+			HashSet<Tile> usedTiles = new HashSet<Tile>();
+			ArrayList<Tile> connectedTiles = new ArrayList<Tile>();
+			connectedTiles.add(Simulation.map.getTile(x, y));
+			usedTiles.add(Simulation.map.getTile(x, y));
+
+			for (int i = 0; i < connectedTiles.size(); i++)
+			{
+				int x = connectedTiles.get(i).x;
+				int y = connectedTiles.get(i).y;
+
+				if (checkTile(Simulation.map.getNextTile(x, y, 0, 1), usedTiles, connectedTiles))
+					return;
+				if (checkTile(Simulation.map.getNextTile(x, y, 1, 1), usedTiles, connectedTiles))
+					return;
+				if (checkTile(Simulation.map.getNextTile(x, y, 2, 1), usedTiles, connectedTiles))
+					return;
+				if (checkTile(Simulation.map.getNextTile(x, y, 3, 1), usedTiles, connectedTiles))
+					return;
+			}
+		}
+	}
+
+	public boolean checkTile(Tile t, HashSet<Tile> usedTiles, ArrayList<Tile> connectedTiles)
+	{
+		if (!usedTiles.contains(t) && t.piped)
+		{
+			if (checkForAvailableGas(t))
+				return true;
+			connectedTiles.add(t);
+			usedTiles.add(t);
+		}
+		return false;
+	}
+
+	public boolean checkForAvailableGas(Tile connected)
+	{
+		float pipeSpeed = 1;
+		boolean gasFound = false;
+		if (H.amount < H.capacity - pipeSpeed)
+		{
+			float received = connected.b.getGas(0, pipeSpeed);
+			if (received > 0)
+			{
+				H.amount += received;
+				H.update();
+				gasFound = true;
+			}
+		}
+
+		if (O.amount < O.capacity - pipeSpeed)
+		{
+			float received = connected.b.getGas(1, pipeSpeed);
+			if (received > 0)
+			{
+				O.amount += received;
+				O.update();
+				gasFound = true;
+			}
+		}
+		return gasFound;
 	}
 
 	public void renderMainGui(Graphics2D g)

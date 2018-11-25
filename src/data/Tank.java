@@ -53,6 +53,12 @@ public class Tank implements Serializable
 		}
 	}
 
+	public void update()
+	{
+		if (amount > capacity)
+			amount = capacity;
+	}
+
 	@Override
 	public String toString()
 	{

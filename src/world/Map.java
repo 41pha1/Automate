@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import data.OpenSimplexNoise;
 import data.Schematic;
 import data.Transformation;
-import display.Frame;
+import game.Simulation;
 import utility.Vector2D;
 
 public class Map implements Serializable
@@ -150,9 +150,11 @@ public class Map implements Serializable
 		{
 			cargo.get(i).id = i;
 		}
-		for (int x = 0; x < width; x++)
+		Vector2D fx = getFrustumCullingX();
+		Vector2D fy = getFrustumCullingY();
+		for (int x = (int) fx.x; x < (int) fx.y; x++)
 		{
-			for (int y = 0; y < height; y++)
+			for (int y = (int) fy.x; y < (int) fy.y; y++)
 			{
 				tiles[x][y].update();
 			}
@@ -163,14 +165,41 @@ public class Map implements Serializable
 		}
 	}
 
+	public Vector2D getFrustumCullingX()
+	{
+		int xoff = -(int) t.getX() - 2;
+		int xmax = xoff + 23;
+		if (xmax >= height)
+			xmax = height - 1;
+		if (xoff < 0)
+			xoff = 0;
+		if (xoff < 0)
+			xoff = 0;
+
+		return new Vector2D(xoff, xmax);
+	}
+
+	public Vector2D getFrustumCullingY()
+	{
+		int yoff = -(int) t.getY() - 8;
+		int ymax = yoff + 23;
+		if (ymax >= width)
+			ymax = width - 1;
+		if (yoff < 0)
+			yoff = 0;
+		if (yoff < 0)
+			yoff = 0;
+
+		return new Vector2D(yoff, ymax);
+	}
+
 	public void renderBuildingsCargo(Graphics2D g, int xoff, int yoff, int xmax, int ymax)
 	{
-		for (int x = xoff; x < xmax + 2; x++)
+		for (int x = xoff; x < xmax; x++)
 		{
-			for (int y = yoff; y < ymax + 2; y++)
+			for (int y = yoff; y < ymax; y++)
 			{
-				if (x < width && y < height)
-					tiles[x][y].renderCargo(g);
+				tiles[x][y].renderCargo(g);
 			}
 		}
 	}
@@ -185,23 +214,22 @@ public class Map implements Serializable
 
 	public void renderTiles(Graphics2D g, int xoff, int yoff, int xmax, int ymax)
 	{
-		for (int x = xoff; x < xmax + 2; x++)
+		for (int x = xoff; x < xmax; x++)
 		{
-			for (int y = yoff; y < ymax + 2; y++)
+			for (int y = yoff; y < ymax; y++)
 			{
-				if (x < width && y < height)
-					tiles[x][y].render(g);
+				tiles[x][y].render(g);
 			}
 		}
 	}
 
 	public void renderBuildingsInTheBackground(Graphics2D g, int xoff, int yoff, int xmax, int ymax)
 	{
-		for (int x = xoff; x < xmax + 2; x++)
+		for (int x = xoff; x < xmax; x++)
 		{
-			for (int y = yoff; y < ymax + 2; y++)
+			for (int y = yoff; y < ymax; y++)
 			{
-				if (x < width && y < height && tiles[x][y].b.getID() == 2)
+				if (tiles[x][y].b.getID() == 2)
 					tiles[x][y].renderBuilding(g);
 			}
 		}
@@ -213,7 +241,7 @@ public class Map implements Serializable
 		{
 			for (int y = yoff; y < ymax + 2; y++)
 			{
-				if (x < width && y < height && tiles[x][y].b.built && tiles[x][y].b.getID() != 2)
+				if (tiles[x][y].b.built && tiles[x][y].b.getID() != 2)
 					tiles[x][y].renderBuilding(g);
 				/* TODO */ renderEntities(g, x, y);
 			}
@@ -272,27 +300,36 @@ public class Map implements Serializable
 		}
 	}
 
+	public void renderPipes(Graphics2D g, int xoff, int yoff, int xmax, int ymax)
+	{
+		for (int x = xoff; x < xmax; x++)
+		{
+			for (int y = yoff; y < ymax; y++)
+			{
+				Simulation.map.tiles[x][y].renderPipes(g);
+			}
+		}
+		for (int x = xoff; x < xmax; x++)
+		{
+			for (int y = yoff; y < ymax; y++)
+			{
+				Simulation.map.tiles[x][y].renderTransparent(g);
+			}
+		}
+	}
+
 	public void Render(Graphics2D g)
 	{
-		int xoff = 0;
-		int yoff = 0;
-		int xmax = (int) (xoff + Frame.width / t.getSize()) * 2;
-		int ymax = (int) (yoff + Frame.height / t.getSize()) * 2;
-		if (ymax > width)
-			ymax = width;
-		if (xmax > height)
-			xmax = height;
-		if (xoff < 0)
-			xoff = 0;
-		if (yoff < 0)
-			yoff = 0;
-		xmax = width;
-		ymax = height;
-		if (xoff < 0)
-			xoff = 0;
-		if (yoff < 0)
-			yoff = 0;
+		Vector2D fx = getFrustumCullingX();
+		Vector2D fy = getFrustumCullingY();
+		int xoff = (int) fx.x;
+		int xmax = (int) fx.y;
+		int yoff = (int) fy.x;
+		int ymax = (int) fy.y;
+
 		renderTiles(g, xoff, yoff, xmax, ymax);
+		if (isEntityBuilding())
+			renderPipes(g, xoff, yoff, xmax, ymax);
 		renderSelection(g);
 		renderEntitySelection(g);
 		renderCargo(g, xoff, yoff, xmax, ymax);

@@ -3,6 +3,7 @@ package data;
 import java.io.Serializable;
 
 import display.Frame;
+import utility.Vector2D;
 
 public class Transformation implements Serializable
 {
@@ -59,6 +60,14 @@ public class Transformation implements Serializable
 	public void setY(float y)
 	{
 		this.y = y;
+	}
+
+	public Vector2D getMapPosition(float x, float y)
+	{
+		Vector2D pos = new Vector2D();
+		pos.x = (x / (size) + y / (size)) / 2;
+		pos.y = (y / (size) - (x / (size))) / 2;
+		return pos;
 	}
 
 	public int getDx(float x, float y)

@@ -28,7 +28,7 @@ public class StorePipe extends Building
 	@Override
 	public void render(Graphics2D g, int x, int y, int size)
 	{
-		g.drawImage(TextureLoader.pipes[10], x, y, size, size, null);
+		g.drawImage(TextureLoader.pipes[0], x + 5, y, (int) (size * 0.8f), (int) (size * 0.8f), null);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class StorePipe extends Building
 	}
 
 	@Override
-	public String toString()
+	public String getName()
 	{
 		return "Pipe";
 	}

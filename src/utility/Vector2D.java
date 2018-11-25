@@ -10,14 +10,22 @@ public class Vector2D implements Serializable
 	public float x;
 	public float y;
 
+	public Vector2D()
+	{
+
+	}
+
 	public Vector2D(float x, float y)
 	{
 		super();
 		this.x = x;
 		this.y = y;
-	}public boolean inBounds()
+	}
+
+	public boolean inBounds()
 	{
-		if(x < 0 || x >= Simulation.map.tiles.length|| y < 0 || y >= Simulation.map.tiles.length)return false;
+		if (x < 0 || x >= Simulation.map.tiles.length || y < 0 || y >= Simulation.map.tiles.length)
+			return false;
 		return true;
 	}
 }

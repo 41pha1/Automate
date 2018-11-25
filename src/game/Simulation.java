@@ -32,7 +32,7 @@ public class Simulation
 			map = LoadSave.loadMap(currentSave);
 			break;
 		case 1:
-			map = new Map(100, 100);
+			map = new Map(1000, 1000);
 			break;
 		case 2:
 			System.exit(0);

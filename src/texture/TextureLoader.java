@@ -30,7 +30,7 @@ public class TextureLoader
 		CBCurves = new BufferedImage[16][4];
 		astronaut = new BufferedImage[3][4][8];
 		cargo = new BufferedImage[Cargo.DIFFERENTCARGOS];
-		pipes = new BufferedImage[11];
+		pipes = new BufferedImage[28];
 		rocketAnimation = new BufferedImage[101];
 		loadAnimations();
 		loadCargo();
@@ -43,7 +43,7 @@ public class TextureLoader
 
 	public static void loadPipes()
 	{
-		pipes = loadTextures("Pipes", 11, 1, 11);
+		pipes = loadTextures("Pipes", 7, 4, 26);
 	}
 
 	public static void loadGrounds()

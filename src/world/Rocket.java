@@ -38,6 +38,44 @@ public class Rocket extends Building
 	}
 
 	@Override
+	public boolean connectedToPipes()
+	{
+		return true;
+	}
+
+	@Override
+	public float getGas(int type, float amount)
+	{
+		if (type == 0)
+		{
+			if (amount <= H.amount)
+			{
+				H.amount -= amount;
+				return amount;
+			} else
+			{
+				float left = H.amount;
+				H.amount = 0;
+				return left;
+			}
+		}
+		if (type == 1)
+		{
+			if (amount <= O.amount)
+			{
+				O.amount -= amount;
+				return amount;
+			} else
+			{
+				float left = O.amount;
+				O.amount = 0;
+				return left;
+			}
+		}
+		return 0;
+	}
+
+	@Override
 	public int[] getInventory()
 	{
 		return materials;

@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.util.Map;
 
-import data.Transformation;
 import game.Simulation;
 import gui.Console;
 import gui.Gui;
@@ -18,14 +17,12 @@ public class Renderer
 {
 	static int width, height;
 	static Gui gui;
-	public static Transformation t;
 
 	public Renderer(int width, int height)
 	{
 		gui = new Gui(400, 200);
 		Renderer.width = width;
 		Renderer.height = height;
-		t = new Transformation(-50, -50, 64);
 	}
 
 	public static void render(Graphics2D g)
