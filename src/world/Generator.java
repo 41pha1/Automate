@@ -27,8 +27,8 @@ public class Generator extends Building
 	public Generator(int x, int y)
 	{
 		TimeRemaining = TimePerReaktion;
-		H = new Tank(0, 500, 1000);
-		O = new Tank(1, 500, 1000);
+		H = new Tank(0, 0, 1000);
+		O = new Tank(1, 0, 1000);
 		H2O = new Tank(2, 0, 1000);
 		this.x = x;
 		this.y = y;
@@ -38,6 +38,12 @@ public class Generator extends Building
 	public Generator()
 	{
 
+	}
+
+	@Override
+	public void place()
+	{
+		Simulation.map.getTile(x, y).updatePipes();
 	}
 
 	@Override
@@ -73,7 +79,7 @@ public class Generator extends Building
 
 	public void checkForConnectedPipes()
 	{
-		if (Simulation.map.getTile(x, y).piped)
+		if (Simulation.map.getTile(x, y).isPiped())
 		{
 			HashSet<Tile> usedTiles = new HashSet<Tile>();
 			ArrayList<Tile> connectedTiles = new ArrayList<Tile>();
@@ -99,7 +105,7 @@ public class Generator extends Building
 
 	public boolean checkTile(Tile t, HashSet<Tile> usedTiles, ArrayList<Tile> connectedTiles)
 	{
-		if (!usedTiles.contains(t) && t.piped)
+		if (!usedTiles.contains(t) && t.isPiped())
 		{
 			if (checkForAvailableGas(t))
 				return true;

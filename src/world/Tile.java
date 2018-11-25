@@ -16,7 +16,8 @@ public class Tile implements Serializable
 	public Building b;
 	public Res r;
 	public int tex;
-	public boolean piped;
+	public int pipeTexture = 1;
+	private boolean piped;
 	int ix, iy;
 
 	public Tile(int x, int y, int ID)
@@ -33,12 +34,17 @@ public class Tile implements Serializable
 
 	public void render(Graphics2D g)
 	{
+		updateIsometric();
+		g.drawImage(TextureLoader.grounds[0][0][tex], ix, iy, null);
+	}
+
+	public void updateIsometric()
+	{
 		int size = (int) Simulation.map.t.getSize();
 		float x = (Simulation.map.t.getX() + this.x) * size;
 		float y = (Simulation.map.t.getY() + this.y) * size;
 		ix = (int) (x - y);
 		iy = (int) ((x + y) / 2f);
-		g.drawImage(TextureLoader.grounds[0][0][tex], ix, iy, null);
 	}
 
 	public void render(Graphics2D g, int scale)
@@ -55,7 +61,7 @@ public class Tile implements Serializable
 	{
 		if (piped)
 		{
-			g.drawImage(TextureLoader.pipes[getPipeTexture()], ix - 15, iy - 45, null);
+			g.drawImage(TextureLoader.pipes[pipeTexture], ix - 15, iy - 45, null);
 		}
 	}
 
@@ -116,8 +122,10 @@ public class Tile implements Serializable
 				return 24;
 			if (left && down)
 				return 25;
-			if (left && right)
+			if (up && down)
 				return 15;
+			if (left && right)
+				return 16;
 			if (down)
 				return 11;
 			if (right)
@@ -138,6 +146,26 @@ public class Tile implements Serializable
 	public void renderCargo(Graphics2D g)
 	{
 		b.renderCargo(g);
+	}
+
+	public boolean isPiped()
+	{
+		return piped;
+	}
+
+	public void setPiped(boolean piped)
+	{
+		this.piped = piped;
+		updatePipes();
+	}
+
+	public void updatePipes()
+	{
+		pipeTexture = getPipeTexture();
+		Simulation.map.getNextTile(x, y, 0, 1).pipeTexture = Simulation.map.getNextTile(x, y, 0, 1).getPipeTexture();
+		Simulation.map.getNextTile(x, y, 1, 1).pipeTexture = Simulation.map.getNextTile(x, y, 1, 1).getPipeTexture();
+		Simulation.map.getNextTile(x, y, 2, 1).pipeTexture = Simulation.map.getNextTile(x, y, 2, 1).getPipeTexture();
+		Simulation.map.getNextTile(x, y, 3, 1).pipeTexture = Simulation.map.getNextTile(x, y, 3, 1).getPipeTexture();
 	}
 
 	public void update()

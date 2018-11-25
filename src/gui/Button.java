@@ -26,9 +26,9 @@ public class Button implements Serializable
 	public boolean showBorder = true;
 	public boolean showOverlay = true;
 	public boolean mouseOver;
-	int texture=-1;
-	
-	public Button(int x, int y, int dx, int dy, int width, int height, String s) 
+	int texture = -1;
+
+	public Button(int x, int y, int dx, int dy, int width, int height, String s)
 	{
 		this.x = x;
 		this.y = y;
@@ -38,7 +38,8 @@ public class Button implements Serializable
 		this.height = height;
 		this.s = s;
 	}
-	public Button(int x, int y, int dx, int dy, int width, int height) 
+
+	public Button(int x, int y, int dx, int dy, int width, int height)
 	{
 		this.x = x;
 		this.y = y;
@@ -47,7 +48,8 @@ public class Button implements Serializable
 		this.width = width;
 		this.height = height;
 	}
-	public Button(int x, int y, int dx, int dy, int width, int height, int textureID) 
+
+	public Button(int x, int y, int dx, int dy, int width, int height, int textureID)
 	{
 		this.x = x;
 		this.y = y;
@@ -57,46 +59,68 @@ public class Button implements Serializable
 		this.height = height;
 		texture = textureID;
 	}
+
 	public boolean MouseOver()
 	{
-		return Mouse.x > x+dx && Mouse.x < x+dx+width && Mouse.y > y+dy && Mouse.y < y+dy+height;
+		return Mouse.x > x + dx && Mouse.x < x + dx + width && Mouse.y > y + dy && Mouse.y < y + dy + height;
 	}
+
 	public void render(Graphics2D g)
 	{
-		g.setColor(new Color(0,0,0,150));
-		if(mouseOver)g.setColor(new Color(50,50,50,150));
-		if(!showOverlay)g.setColor(new Color(100,100,100,150));
-		if(showOverlay||mouseOver)g.fillRect(x,y,width,height);
+		g.setColor(new Color(0, 0, 0, 150));
+		if (mouseOver)
+			g.setColor(new Color(50, 50, 50, 150));
+		if (!showOverlay)
+			g.setColor(new Color(100, 100, 100, 150));
+		if (showOverlay || mouseOver)
+			g.fillRect(x, y, width, height);
 		g.setColor(Color.WHITE);
-		if(showBorder || (pressed && showBorderWhenPressed))g.drawRect(x,y,width-1,height-1);
+		if (showBorder || (pressed && showBorderWhenPressed))
+			g.drawRect(x, y, width - 1, height - 1);
 		g.setFont(font);
-		g.drawString(s,x+5,y+height/1.75f);
-		if(texture!=-1)g.drawImage(TextureLoader.icons[texture], x, y, width, height, null);
+		g.drawString(s, x + 5, y + height / 1.75f);
+		if (texture != -1)
+			g.drawImage(TextureLoader.icons[texture], x, y, width, height, null);
 	}
+
 	public void update(int x, int y, int dx, int dy)
 	{
 		this.dx = dx;
 		this.dy = dy;
-		update(x,y);
+		update(x, y);
 	}
+
+	public boolean isPressed()
+	{
+		update();
+		if (pressed)
+		{
+			pressed = false;
+			return true;
+		}
+		return false;
+	}
+
 	public void update(int x, int y)
 	{
 		this.x = x;
 		this.y = y;
 		update();
 	}
+
 	public void update()
 	{
-		 font = new Font("Serial", Font.PLAIN, FontSize);
+		font = new Font("Serial", Font.PLAIN, FontSize);
 		mouseOver = MouseOver();
-		if(mouseOver&&Mouse.left)
+		if (mouseOver && Mouse.left)
 		{
 			mouseOver = false;
 			pressed = true;
 			Mouse.left = false;
-		}else
+		} else
 		{
-			if(!stayPressed)pressed = false;
+			if (!stayPressed)
+				pressed = false;
 		}
 	}
 }

@@ -9,8 +9,8 @@ import java.util.Map;
 import game.Simulation;
 import gui.Console;
 import gui.Gui;
+import gui.MenuBar;
 import gui.Store;
-import launcher.Main;
 import utility.Counter;
 
 public class Renderer
@@ -21,6 +21,7 @@ public class Renderer
 	public Renderer(int width, int height)
 	{
 		gui = new Gui(400, 200);
+		new MenuBar();
 		Renderer.width = width;
 		Renderer.height = height;
 	}
@@ -34,10 +35,9 @@ public class Renderer
 		reset(g);
 		Simulation.map.Render(g);
 		Simulation.pm.render(g);
-		// g.drawImage(InfoBox.render(), 750, 50, 200, 100, null);
 		renderGuis(g);
-		showFPS(g);
-		// showRes(g);
+		if (Simulation.intro > 100)
+			MenuBar.render(g);
 	}
 
 	public static void renderGuis(Graphics2D g)
@@ -81,14 +81,6 @@ public class Renderer
 			int height = g.getFontMetrics().getHeight();
 			g.drawString(text, Frame.width / 2 - width / 2, Frame.height / 2 - height / 2);
 		}
-	}
-
-	public static void showFPS(Graphics2D g)
-	{
-		g.setColor(Color.GREEN);
-		Font font = new Font("Serial", Font.PLAIN, 15);
-		g.setFont(font);
-		g.drawString("" + Main.fps, 10, 30);
 	}
 
 	public static void reset(Graphics2D g)

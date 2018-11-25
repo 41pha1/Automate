@@ -32,7 +32,7 @@ public class Simulation
 			map = LoadSave.loadMap(currentSave);
 			break;
 		case 1:
-			map = new Map(1000, 1000);
+			map = new Map(100, 100);
 			break;
 		case 2:
 			System.exit(0);
@@ -45,9 +45,12 @@ public class Simulation
 	{
 		Console.update();
 		intro = Math.max((int) (map.framesSinceGeneration / 5) - 50, 0);
-		move();
+		if (intro > 100)
+		{
+			Picker.update();
+			move();
+		}
 		Simulation.map.t.update();
-		Picker.update();
 		Gui.MouseOver = false;
 		map.update();
 		pm.update();
@@ -181,12 +184,13 @@ public class Simulation
 		if (Mouse.left)
 		{
 			Vector2D pos = Picker.pick;
-			if (Store.selectedCategory != -1 && Store.cs.get(Store.selectedCategory).selected != -1
-					&& Store.cs.get(Store.selectedCategory).slots.get(Store.cs.get(Store.selectedCategory).selected).b
-							.getID() == 10) // PIPE SELECTED
+			if (Store.isPipeSelected())
 			{
-				if (Picker.isOverMap())
-					Simulation.map.getTile(pos).piped = true;
+				if (Picker.isOverMap() && !map.getTile(pos).isPiped())
+				{
+					map.getTile(pos).setPiped(true);
+					map.schematic.pipesToBuild[(int) pos.x][(int) pos.y] = true;
+				}
 			} else
 			{
 				if (Picker.isOverMap() && !map.getTile((int) pos.x, (int) pos.y).b.built
@@ -207,14 +211,20 @@ public class Simulation
 			Vector2D pos = Picker.pick;
 			if (Picker.isOverMap())
 			{
-				if (Simulation.map.schematic.getBuilding((int) pos.x, (int) pos.y).built)
+				if (Store.isPipeSelected())
+				{
+					if (map.getTile(pos).isPiped())
+					{
+						map.getTile(pos).setPiped(false);
+						map.schematic.pipesToBuild[(int) pos.x][(int) pos.y] = false;
+					}
+				} else if (Simulation.map.schematic.getBuilding((int) pos.x, (int) pos.y).built)
 					Simulation.map.schematic.buildings[(int) pos.x][(int) pos.y] = new Building((int) pos.x,
 							(int) pos.y);
 				else if (Simulation.map.tiles[(int) pos.x][(int) pos.y].b.built)
 					Simulation.map.schematic.buildings[(int) pos.x][(int) pos.y] = Simulation.map.tiles[(int) pos.x][(int) pos.y].b
 							.clone();
 			}
-
 		}
 		if (Keyboard.c)
 		{

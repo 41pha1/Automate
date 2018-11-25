@@ -23,8 +23,8 @@ public class Rocket extends Building
 
 	public Rocket(int x, int y)
 	{
-		H = new Tank(0, 5000, 10000);
-		O = new Tank(1, 5000, 20000);
+		H = new Tank(0, 50000, 100000);
+		O = new Tank(1, 50000, 200000);
 		sb = new ScrollBar(0, 0, 12, 120);
 		this.x = x;
 		this.y = y;
@@ -35,6 +35,12 @@ public class Rocket extends Building
 			materials[j] = 1000;
 		}
 		c = new Cargo(0, 0, 0);
+	}
+
+	@Override
+	public void place()
+	{
+		Simulation.map.getTile(x, y).updatePipes();
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class TextureLoader
 
 	public static void loadPipes()
 	{
-		pipes = loadTextures("Pipes", 7, 4, 26);
+		pipes = loadTextures("thinPipes", 7, 4, 26);
 	}
 
 	public static void loadGrounds()
@@ -92,6 +92,7 @@ public class TextureLoader
 		icons[5] = loadImage("left");
 		icons[6] = loadImage("save");
 		icons[7] = loadImage("arrow");
+		icons[8] = loadImage("layers");
 	}
 
 	public static void loadCBcurves()

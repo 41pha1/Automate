@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import data.OpenSimplexNoise;
 import data.Schematic;
 import data.Transformation;
+import display.Frame;
 import game.Simulation;
+import gui.MenuBar;
+import gui.Store;
 import utility.Vector2D;
 
 public class Map implements Serializable
@@ -168,7 +171,7 @@ public class Map implements Serializable
 	public Vector2D getFrustumCullingX()
 	{
 		int xoff = -(int) t.getX() - 2;
-		int xmax = xoff + 23;
+		int xmax = xoff + (int) ((Frame.width / t.size)) + 4;
 		if (xmax >= height)
 			xmax = height - 1;
 		if (xoff < 0)
@@ -181,8 +184,8 @@ public class Map implements Serializable
 
 	public Vector2D getFrustumCullingY()
 	{
-		int yoff = -(int) t.getY() - 8;
-		int ymax = yoff + 23;
+		int yoff = -(int) (t.getY() + (Frame.width / t.size) / 2 + 1);
+		int ymax = yoff + (int) ((Frame.width / t.size)) + 4;
 		if (ymax >= width)
 			ymax = width - 1;
 		if (yoff < 0)
@@ -302,6 +305,26 @@ public class Map implements Serializable
 
 	public void renderPipes(Graphics2D g, int xoff, int yoff, int xmax, int ymax)
 	{
+
+		for (int x = xoff; x < xmax; x++)
+		{
+			for (int y = yoff; y < ymax; y++)
+			{
+				if (!schematic.pipesToBuild[x][y])
+					Simulation.map.tiles[x][y].renderPipes(g);
+			}
+		}
+		for (int x = xoff; x < xmax; x++)
+		{
+			for (int y = yoff; y < ymax; y++)
+			{
+				Simulation.map.tiles[x][y].renderTransparent(g);
+			}
+		}
+	}
+
+	public void renderSchematicPipes(Graphics2D g, int xoff, int yoff, int xmax, int ymax)
+	{
 		for (int x = xoff; x < xmax; x++)
 		{
 			for (int y = yoff; y < ymax; y++)
@@ -328,8 +351,13 @@ public class Map implements Serializable
 		int ymax = (int) fy.y;
 
 		renderTiles(g, xoff, yoff, xmax, ymax);
-		if (isEntityBuilding())
+		if (isEntityBuilding() && Store.isPipeSelected())
+		{
+			renderSchematicPipes(g, xoff, yoff, xmax, ymax);
+		} else if (MenuBar.showPipes)
+		{
 			renderPipes(g, xoff, yoff, xmax, ymax);
+		}
 		renderSelection(g);
 		renderEntitySelection(g);
 		renderCargo(g, xoff, yoff, xmax, ymax);

@@ -12,6 +12,8 @@ public class Schematic implements Serializable
 	private static final long serialVersionUID = 1L;
 	public Building[][] buildings;
 	public Building[][] save;
+	public boolean[][] pipesToBuild;
+
 	public boolean saved = false;
 	int w, h;
 
@@ -21,11 +23,14 @@ public class Schematic implements Serializable
 		h = height;
 		buildings = new Building[w][h];
 		save = new Building[w][h];
+		pipesToBuild = new boolean[w][h];
+
 		for (int x = 0; x < w; x++)
 		{
 			for (int y = 0; y < h; y++)
 			{
 				save[x][y] = new Building(0, 0);
+				pipesToBuild[x][y] = false;
 			}
 		}
 	}

@@ -50,6 +50,11 @@ public class Building implements Serializable
 		this.y = y;
 	}
 
+	public void place()
+	{
+
+	}
+
 	public Building(int x, int y, int dir)
 	{
 		this.x = x;

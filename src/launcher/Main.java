@@ -22,7 +22,7 @@ public class Main
 		init();
 		System.out.println("Done! (" + (System.currentTimeMillis() - t) + "ms)");
 		long lr = System.nanoTime();
-		long tpr = 1000000000 / (fpsCap + 1);
+		long tpr = 1000000000 / (fpsCap);
 		while (true)
 		{
 			Counter.update();
@@ -46,8 +46,8 @@ public class Main
 		// Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		// int width = (int)screenSize.getWidth();
 		// int height = (int)screenSize.getHeight();
-		int width = 900;
-		int height = 900;
+		int width = 1920 / 2;
+		int height = 1080 / 2;
 		f = new Frame(width, height, 0, 0);
 		store = new Store();
 	}

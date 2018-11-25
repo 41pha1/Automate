@@ -50,6 +50,12 @@ public class Store
 		save.showOverlay = false;
 	}
 
+	public static boolean isPipeSelected()
+	{
+		return (selectedCategory != -1 && cs.get(Store.selectedCategory).selected != -1
+				&& cs.get(Store.selectedCategory).slots.get(cs.get(selectedCategory).selected).b.getID() == 10);
+	}
+
 	public void addCategory(Building[] elements, String name)
 	{
 		cs.add(new Category(cs.size(), 100, name));

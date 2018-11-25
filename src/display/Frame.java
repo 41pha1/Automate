@@ -14,6 +14,7 @@ public class Frame extends JFrame
 	public static int width, height;
 	public static Renderer r;
 	public static BufferStrategy bs;
+	public static boolean undecorated;
 
 	public Frame(int width, int height, int x, int y)
 	{
@@ -34,10 +35,16 @@ public class Frame extends JFrame
 		this.setTitle("Automate");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setResizable(false);
-		// this.setUndecorated(true);
+		this.setDecorated(true);
 		this.setLocation(0, 0);
 		this.setVisible(true);
 		createStrat();
+	}
+
+	public void setDecorated(boolean b)
+	{
+		this.setUndecorated(!b);
+		undecorated = !b;
 	}
 
 	public void createStrat()

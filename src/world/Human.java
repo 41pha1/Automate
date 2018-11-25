@@ -306,7 +306,13 @@ public class Human extends Entity implements Serializable
 			}
 		}
 		if (shortestX + shortestY != -2)
-			return Simulation.map.schematic.save[shortestX][shortestY];
+		{
+			if (whatToDoWithBuilding(shortestX, shortestY) == 4)
+			{
+				return new Building(shortestX, shortestY);
+			} else
+				return Simulation.map.schematic.save[shortestX][shortestY];
+		}
 		return null;
 	}
 
@@ -378,11 +384,17 @@ public class Human extends Entity implements Serializable
 		return false;
 	}
 
-	public boolean gatherCargo(Building b)
+	public boolean gatherCargo(Building b, int whatToDoWithBuilding)
 	{
 		moving = false;
 		busy = moving;
-		int[] price = b.getPrice();
+		int[] price;
+		if (whatToDoWithBuilding == 4)
+		{
+			price = new StorePipe().getPrice();
+		} else
+			price = b.getPrice();
+
 		int j = 0;
 		boolean AllMaterialsGathered = true;
 		for (int i = 0; i < Cargo.DIFFERENTCARGOS; i++)
@@ -435,15 +447,23 @@ public class Human extends Entity implements Serializable
 	{
 		if (!Simulation.map.schematic.saved)
 			return 0;
+
 		Building MB = Simulation.map.tiles[x][y].b;
 		Building SB = Simulation.map.schematic.save[x][y];
-		if (MB.compare(SB) || ((!MB.built) && (!SB.built)))
-			return 0; // DoNothing
+		if ((MB.compare(SB) || ((!MB.built) && (!SB.built))))
+			if (!Simulation.map.schematic.pipesToBuild[x][y])
+			{
+				return 0; // DoNothing
+			}
+		if (Simulation.map.schematic.pipesToBuild[x][y])
+			return 4; // BuildPipes
 		if (!MB.built && SB.built)
 			return 1; // Build
 		if (MB.built && !SB.built)
 			return 2; // Destroy
-		return 3; // Change
+		if (MB.built && SB.built)
+			return 3; // Change
+		return 0;
 	}
 
 	public void build(int i)
@@ -452,7 +472,8 @@ public class Human extends Entity implements Serializable
 		if (TB != null)
 		{
 			destination = new Vector2D(TB.x, TB.y);
-			if (whatToDoWithBuilding(TB.x, TB.y) == 0)
+			int a = whatToDoWithBuilding(TB.x, TB.y);
+			if (a == 0)
 			{
 				TB = null;
 			}
@@ -467,10 +488,12 @@ public class Human extends Entity implements Serializable
 		if (toBuild != null)
 		{
 			int whatToDoWithBuilding = whatToDoWithBuilding(toBuild.x, toBuild.y);
+			if (whatToDoWithBuilding == 0)
+				return;
 			if (!busy)
 			{
-				if (whatToDoWithBuilding == 1)
-					gatherCargo(toBuild);
+				if (whatToDoWithBuilding == 1 || whatToDoWithBuilding == 4)
+					gatherCargo(toBuild, whatToDoWithBuilding);
 				if (!busy)
 				{
 					destination = new Vector2D(toBuild.x, toBuild.y);
@@ -486,6 +509,7 @@ public class Human extends Entity implements Serializable
 								inventory[j] -= price[j];
 							}
 							Simulation.map.tiles[(int) destination.x][(int) destination.y].b = Simulation.map.schematic.save[(int) destination.x][(int) destination.y];
+							Simulation.map.tiles[(int) destination.x][(int) destination.y].b.place();
 						} else if (whatToDoWithBuilding == 2) // Destroy
 						{
 							int[] refund = Simulation.map.tiles[(int) destination.x][(int) destination.y].b.getPrice();
@@ -502,6 +526,10 @@ public class Human extends Entity implements Serializable
 							Simulation.map.tiles[(int) destination.x][(int) destination.y].b
 									.setCurvature(toBuild.getCurvature());
 							Simulation.map.tiles[(int) destination.x][(int) destination.y].b.dir = toBuild.dir;
+						} else if (whatToDoWithBuilding == 4) // Build Pipe
+						{
+							Simulation.map.schematic.pipesToBuild[(int) destination.x][(int) destination.y] = false;
+							inventory[Cargo.PIPE]--;
 						}
 					}
 				}
