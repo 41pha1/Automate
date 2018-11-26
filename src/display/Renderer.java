@@ -2,8 +2,12 @@ package display;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import game.Simulation;
@@ -24,6 +28,14 @@ public class Renderer
 		new MenuBar();
 		Renderer.width = width;
 		Renderer.height = height;
+		try
+		{
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("res/ethnocentric.ttf")));
+		} catch (IOException | FontFormatException e)
+		{
+			System.out.println("tlskjtlkj");
+		}
 	}
 
 	public static void render(Graphics2D g)

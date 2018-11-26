@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.io.Serializable;
 
 import data.Res;
+import display.Frame;
 import game.Simulation;
 import texture.TextureLoader;
 
@@ -17,7 +18,7 @@ public class Tile implements Serializable
 	public Res r;
 	public int tex;
 	public int pipeTexture = 1;
-	private boolean piped;
+	public boolean piped;
 	int ix, iy;
 
 	public Tile(int x, int y, int ID)
@@ -35,7 +36,8 @@ public class Tile implements Serializable
 	public void render(Graphics2D g)
 	{
 		updateIsometric();
-		g.drawImage(TextureLoader.grounds[0][0][tex], ix, iy, null);
+		if (onScreen())
+			g.drawImage(TextureLoader.grounds[0][0][tex], ix, iy, null);
 	}
 
 	public void updateIsometric()
@@ -49,17 +51,19 @@ public class Tile implements Serializable
 
 	public void render(Graphics2D g, int scale)
 	{
-		int size = (int) Simulation.map.t.getSize();
-		float x = (Simulation.map.t.getX() + this.x) * size;
-		float y = (Simulation.map.t.getY() + this.y) * size;
-		ix = (int) (x - y);
-		iy = (int) ((x + y) / 2f);
-		g.drawImage(TextureLoader.grounds[0][0][tex], ix, iy, scale, scale, null);
+		updateIsometric();
+		if (onScreen())
+			g.drawImage(TextureLoader.grounds[0][0][tex], ix, iy, scale, scale, null);
+	}
+
+	public boolean onScreen()
+	{
+		return ix < Frame.width && iy < Frame.height && ix + 129 > 0 && iy + 129 > 0;
 	}
 
 	public void renderPipes(Graphics2D g)
 	{
-		if (piped)
+		if (piped && onScreen())
 		{
 			g.drawImage(TextureLoader.pipes[pipeTexture], ix - 15, iy - 45, null);
 		}
@@ -67,75 +71,12 @@ public class Tile implements Serializable
 
 	public void renderTransparent(Graphics2D g)
 	{
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
-		render(g);
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
-	}
-
-	public int getPipeTexture()
-	{
-		boolean up = Simulation.map.getNextTile(x, y, 0, 1).piped;
-		boolean left = Simulation.map.getNextTile(x, y, 1, 1).piped;
-		boolean down = Simulation.map.getNextTile(x, y, 2, 1).piped;
-		boolean right = Simulation.map.getNextTile(x, y, 3, 1).piped;
-		boolean building = Simulation.map.getTile(x, y).b.connectedToPipes();
-
-		if (!building)
+		if (onScreen())
 		{
-			if (up && right && down && left)
-				return 2;
-			if (left && right && down)
-				return 3;
-			if (up && right && down)
-				return 4;
-			if (up && right && left)
-				return 5;
-			if (up && down && left)
-				return 6;
-			if (right && down)
-				return 7;
-			if (up && right)
-				return 8;
-			if (up && left)
-				return 9;
-			if (left && down)
-				return 10;
-			if (up || down)
-				return 0;
-		} else
-		{
-			if (up && right && down && left)
-				return 17;
-			if (left && right && down)
-				return 18;
-			if (up && right && down)
-				return 19;
-			if (up && right && left)
-				return 20;
-			if (up && down && left)
-				return 21;
-			if (right && down)
-				return 22;
-			if (up && right)
-				return 23;
-			if (up && left)
-				return 24;
-			if (left && down)
-				return 25;
-			if (up && down)
-				return 15;
-			if (left && right)
-				return 16;
-			if (down)
-				return 11;
-			if (right)
-				return 12;
-			if (up)
-				return 13;
-			if (left)
-				return 14;
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+			render(g);
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 		}
-		return 1;
 	}
 
 	public void renderBuilding(Graphics2D g)
@@ -161,11 +102,15 @@ public class Tile implements Serializable
 
 	public void updatePipes()
 	{
-		pipeTexture = getPipeTexture();
-		Simulation.map.getNextTile(x, y, 0, 1).pipeTexture = Simulation.map.getNextTile(x, y, 0, 1).getPipeTexture();
-		Simulation.map.getNextTile(x, y, 1, 1).pipeTexture = Simulation.map.getNextTile(x, y, 1, 1).getPipeTexture();
-		Simulation.map.getNextTile(x, y, 2, 1).pipeTexture = Simulation.map.getNextTile(x, y, 2, 1).getPipeTexture();
-		Simulation.map.getNextTile(x, y, 3, 1).pipeTexture = Simulation.map.getNextTile(x, y, 3, 1).getPipeTexture();
+		pipeTexture = TextureLoader.getPipeTexture(x, y);
+		Simulation.map.getNextTile(x, y, 0, 1).pipeTexture = TextureLoader
+				.getPipeTexture(Simulation.map.getNextTile(x, y, 0, 1).x, Simulation.map.getNextTile(x, y, 0, 1).y);
+		Simulation.map.getNextTile(x, y, 1, 1).pipeTexture = TextureLoader
+				.getPipeTexture(Simulation.map.getNextTile(x, y, 1, 1).x, Simulation.map.getNextTile(x, y, 1, 1).y);
+		Simulation.map.getNextTile(x, y, 2, 1).pipeTexture = TextureLoader
+				.getPipeTexture(Simulation.map.getNextTile(x, y, 2, 1).x, Simulation.map.getNextTile(x, y, 2, 1).y);
+		Simulation.map.getNextTile(x, y, 3, 1).pipeTexture = TextureLoader
+				.getPipeTexture(Simulation.map.getNextTile(x, y, 3, 1).x, Simulation.map.getNextTile(x, y, 3, 1).y);
 	}
 
 	public void update()

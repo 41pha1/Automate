@@ -46,8 +46,8 @@ public class Main
 		// Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		// int width = (int)screenSize.getWidth();
 		// int height = (int)screenSize.getHeight();
-		int width = 1920 / 2;
-		int height = 1080 / 2;
+		int width = 1200;
+		int height = 1000;
 		f = new Frame(width, height, 0, 0);
 		store = new Store();
 	}

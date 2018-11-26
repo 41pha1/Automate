@@ -153,11 +153,16 @@ public class Map implements Serializable
 		{
 			cargo.get(i).id = i;
 		}
-		Vector2D fx = getFrustumCullingX();
-		Vector2D fy = getFrustumCullingY();
-		for (int x = (int) fx.x; x < (int) fx.y; x++)
+		Vector2D start = getFrustumCullingStart();
+		Vector2D end = getFrustumCullingEnd();
+		int xoff = (int) start.x;
+		int xmax = (int) end.x;
+		int yoff = (int) start.y;
+		int ymax = (int) end.y;
+
+		for (int x = xoff; x < xmax; x++)
 		{
-			for (int y = (int) fy.x; y < (int) fy.y; y++)
+			for (int y = yoff; y < ymax; y++)
 			{
 				tiles[x][y].update();
 			}
@@ -168,32 +173,31 @@ public class Map implements Serializable
 		}
 	}
 
-	public Vector2D getFrustumCullingX()
+	public Vector2D getFrustumCullingStart()
 	{
-		int xoff = -(int) t.getX() - 2;
-		int xmax = xoff + (int) ((Frame.width / t.size)) + 4;
-		if (xmax >= height)
-			xmax = height - 1;
+		float unit = 1 / 64f;
+		float halfDiagonal = (float) Math.sqrt(Math.pow(unit * Frame.width, 2) + Math.pow(unit * Frame.height, 2)) / 2;
+		int xoff = (int) (-t.getX() + t.getMapPosition(Frame.width / 2, Frame.height / 2).x - halfDiagonal);
+		int yoff = (int) (-t.getY() + t.getMapPosition(Frame.width / 2, Frame.height / 2).y - halfDiagonal);
 		if (xoff < 0)
 			xoff = 0;
-		if (xoff < 0)
-			xoff = 0;
+		if (yoff < 0)
+			yoff = 0;
 
-		return new Vector2D(xoff, xmax);
+		return new Vector2D(xoff, yoff);
 	}
 
-	public Vector2D getFrustumCullingY()
+	public Vector2D getFrustumCullingEnd()
 	{
-		int yoff = -(int) (t.getY() + (Frame.width / t.size) / 2 + 1);
-		int ymax = yoff + (int) ((Frame.width / t.size)) + 4;
-		if (ymax >= width)
-			ymax = width - 1;
-		if (yoff < 0)
-			yoff = 0;
-		if (yoff < 0)
-			yoff = 0;
-
-		return new Vector2D(yoff, ymax);
+		float unit = 1 / 64f;
+		float halfDiagonal = (float) Math.sqrt(Math.pow(unit * Frame.width, 2) + Math.pow(unit * Frame.height, 2)) / 2;
+		int xend = (int) (-t.getX() + t.getMapPosition(Frame.width / 2, Frame.height / 2).x + halfDiagonal) + 5;
+		int yend = (int) (-t.getY() + t.getMapPosition(Frame.width / 2, Frame.height / 2).y + halfDiagonal) + 6;
+		if (xend > width - 1)
+			xend = width - 1;
+		if (yend > height - 1)
+			yend = height - 1;
+		return new Vector2D(xend, yend);
 	}
 
 	public void renderBuildingsCargo(Graphics2D g, int xoff, int yoff, int xmax, int ymax)
@@ -240,9 +244,9 @@ public class Map implements Serializable
 
 	public void renderBuildings(Graphics2D g, int xoff, int yoff, int xmax, int ymax)
 	{
-		for (int x = xoff; x < xmax + 2; x++)
+		for (int x = xoff; x < xmax; x++)
 		{
-			for (int y = yoff; y < ymax + 2; y++)
+			for (int y = yoff; y < ymax; y++)
 			{
 				if (tiles[x][y].b.built && tiles[x][y].b.getID() != 2)
 					tiles[x][y].renderBuilding(g);
@@ -343,12 +347,12 @@ public class Map implements Serializable
 
 	public void Render(Graphics2D g)
 	{
-		Vector2D fx = getFrustumCullingX();
-		Vector2D fy = getFrustumCullingY();
-		int xoff = (int) fx.x;
-		int xmax = (int) fx.y;
-		int yoff = (int) fy.x;
-		int ymax = (int) fy.y;
+		Vector2D start = getFrustumCullingStart();
+		Vector2D end = getFrustumCullingEnd();
+		int xoff = (int) start.x;
+		int xmax = (int) end.x;
+		int yoff = (int) start.y;
+		int ymax = (int) end.y;
 
 		renderTiles(g, xoff, yoff, xmax, ymax);
 		if (isEntityBuilding() && Store.isPipeSelected())
