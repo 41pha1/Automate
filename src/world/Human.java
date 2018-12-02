@@ -642,6 +642,7 @@ public class Human extends Entity implements Serializable
 		boolean enough = gatherCargo(b);
 		if (enough)
 		{
+			waitingForMaterials = false;
 			dumpInventory = true;
 			Vector2D storage = searchFor(5, 0, 0, Simulation.map.width, Simulation.map.height);
 			if (arrivedAt(storage) && !materialsForAllBuildingsGathered())
@@ -768,7 +769,6 @@ public class Human extends Entity implements Serializable
 					{
 						int k = addToInventory(i, 1);
 						storage.getInventory()[i] -= k;
-						waitingForMaterials = false;
 						if (k == 0)
 							return true;
 						return false;
@@ -896,6 +896,8 @@ public class Human extends Entity implements Serializable
 			}
 		}
 		busy = moving || waitingForMaterials;
+		if (!busy)
+			busy = !dumpInventory();
 	}
 
 	public boolean useCargo(int x, int y, int[] cargos)
@@ -1098,7 +1100,8 @@ public class Human extends Entity implements Serializable
 				pickUp(i);
 			} else if (t.tasks.get(i).ID == 2 && (!busy || i == 0))
 			{
-				build(i);
+				if (Simulation.map.schematic.saved)
+					build(i);
 			} else if (t.tasks.get(i).ID == 3
 					&& (t.tasks.get(i).des != null && !t.tasks.get(i).selectingDestination && (!busy || i == 0)))
 			{
