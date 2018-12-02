@@ -12,7 +12,6 @@ import data.Transformation;
 import display.Frame;
 import game.Simulation;
 import gui.MenuBar;
-import gui.Store;
 import utility.Vector2D;
 
 public class Map implements Serializable
@@ -327,24 +326,6 @@ public class Map implements Serializable
 		}
 	}
 
-	public void renderSchematicPipes(Graphics2D g, int xoff, int yoff, int xmax, int ymax)
-	{
-		for (int x = xoff; x < xmax; x++)
-		{
-			for (int y = yoff; y < ymax; y++)
-			{
-				Simulation.map.tiles[x][y].renderPipes(g);
-			}
-		}
-		for (int x = xoff; x < xmax; x++)
-		{
-			for (int y = yoff; y < ymax; y++)
-			{
-				Simulation.map.tiles[x][y].renderTransparent(g);
-			}
-		}
-	}
-
 	public void Render(Graphics2D g)
 	{
 		Vector2D start = getFrustumCullingStart();
@@ -355,23 +336,22 @@ public class Map implements Serializable
 		int ymax = (int) end.y;
 
 		renderTiles(g, xoff, yoff, xmax, ymax);
-		if (isEntityBuilding() && Store.isPipeSelected())
-		{
-			renderSchematicPipes(g, xoff, yoff, xmax, ymax);
-		} else if (MenuBar.showPipes)
-		{
-			renderPipes(g, xoff, yoff, xmax, ymax);
-		}
-		renderSelection(g);
-		renderEntitySelection(g);
-		renderCargo(g, xoff, yoff, xmax, ymax);
 		if (isEntityBuilding())
 		{
-			schematic.render(g);
-			for (Entity entity : entities)
+			schematic.renderPipes(g, xoff, yoff, xmax, ymax);
+		} else
+		{
+			if (MenuBar.showPipes)
 			{
-				entity.render(g);
+				renderPipes(g, xoff, yoff, xmax, ymax);
 			}
+			renderSelection(g);
+			renderEntitySelection(g);
+			renderCargo(g, xoff, yoff, xmax, ymax);
+		}
+		if (isEntityBuilding())
+		{
+			schematic.render(g, xoff, yoff, xmax, ymax);
 		} else
 		{
 			renderBuildingsInTheBackground(g, xoff, yoff, xmax, ymax);

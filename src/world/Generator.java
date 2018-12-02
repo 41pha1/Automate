@@ -79,7 +79,7 @@ public class Generator extends Building
 
 	public void checkForConnectedPipes()
 	{
-		if (Simulation.map.getTile(x, y).isPiped())
+		if (piped(x, y))
 		{
 			HashSet<Tile> usedTiles = new HashSet<Tile>();
 			ArrayList<Tile> connectedTiles = new ArrayList<Tile>();
@@ -103,9 +103,19 @@ public class Generator extends Building
 		}
 	}
 
+	public boolean piped(Tile t)
+	{
+		return piped(t.x, t.y);
+	}
+
+	public boolean piped(int x, int y)
+	{
+		return Simulation.map.getTile(x, y).isPiped() && !Simulation.map.schematic.pipesToBuild[x][y];
+	}
+
 	public boolean checkTile(Tile t, HashSet<Tile> usedTiles, ArrayList<Tile> connectedTiles)
 	{
-		if (!usedTiles.contains(t) && t.isPiped())
+		if (!usedTiles.contains(t) && piped(t))
 		{
 			if (checkForAvailableGas(t))
 				return true;

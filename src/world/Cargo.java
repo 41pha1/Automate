@@ -172,6 +172,43 @@ public class Cargo implements Serializable
 		return new Cargo(0, 0, 0);
 	}
 
+	public static float getWeight(int ID)
+	{
+		switch (ID)
+		{
+		case COAL:
+			return 0.5f;
+		case IRON_ORE:
+			return 1;
+		case STONE:
+			return 0.8f;
+		case LOG:
+			return 2;
+		case IRON:
+			return 0.5f;
+		case MOTOR:
+			return 0.1f;
+		case PROCESSOR:
+			return 0.05f;
+		case RUBBER:
+			return 0.4f;
+		case COPPER:
+			return 0.5f;
+		case WIRE:
+			return 0.2f;
+		case CABLE:
+			return 0.3f;
+		case COIL:
+			return 0.3f;
+		case COPPER_ORE:
+			return 1;
+		case PIPE:
+			return 1;
+		default:
+			return 0;
+		}
+	}
+
 	public static String getName(int ID)
 	{
 		switch (ID)

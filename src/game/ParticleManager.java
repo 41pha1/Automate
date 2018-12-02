@@ -22,6 +22,11 @@ public class ParticleManager
 		addParticles(b.x, b.y, -0.5f, 0.03f, 0.03f, 0.07f, 0, 0, -0.002f, 50, 1000, TextureLoader.getTexture(b));
 	}
 
+	public void addDestructionParticles(float x, float y)
+	{
+		addParticles(x, y, -0.5f, 0.03f, 0.03f, 0.07f, 0, 0, -0.002f, 50, 1000, TextureLoader.pipes[0]);
+	}
+
 	public void addParticles(float x, float y, float speed, float accx, float accy, float lifetime, int n,
 			BufferedImage b)
 	{

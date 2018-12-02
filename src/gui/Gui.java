@@ -86,7 +86,7 @@ public class Gui
 		ArrayList<Vector2D> inv = new ArrayList<Vector2D>();
 		for (int i = 0; i < Cargo.DIFFERENTCARGOS; i++)
 		{
-			if (inventory[i] > 0)
+			if (inventory[i] != 0)
 				inv.add(new Vector2D(i, inventory[i]));
 		}
 

@@ -35,7 +35,7 @@ public class Frame extends JFrame
 		this.setTitle("Automate");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setResizable(false);
-		this.setDecorated(true);
+		this.setDecorated(false);
 		this.setLocation(0, 0);
 		this.setVisible(true);
 		createStrat();

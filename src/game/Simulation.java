@@ -34,7 +34,7 @@ public class Simulation
 		case 1:
 			map = new Map(100, 100);
 			break;
-		case 2:
+		default:
 			System.exit(0);
 		}
 		pm = new ParticleManager();
@@ -186,10 +186,16 @@ public class Simulation
 			Vector2D pos = Picker.pick;
 			if (Store.isPipeSelected())
 			{
-				if (Picker.isOverMap() && !map.getTile(pos).isPiped())
+				if (Picker.isOverMap())
 				{
-					map.getTile(pos).setPiped(true);
-					map.schematic.pipesToBuild[(int) pos.x][(int) pos.y] = true;
+					if (!map.getTile(pos).isPiped())
+					{
+						map.getTile(pos).setPiped(true);
+						map.schematic.pipesToBuild[(int) pos.x][(int) pos.y] = true;
+					} else if (map.schematic.pipesToDestroy[(int) pos.x][(int) pos.y])
+					{
+						map.schematic.pipesToDestroy[(int) pos.x][(int) pos.y] = false;
+					}
 				}
 			} else
 			{
@@ -215,8 +221,14 @@ public class Simulation
 				{
 					if (map.getTile(pos).isPiped())
 					{
-						map.getTile(pos).setPiped(false);
-						map.schematic.pipesToBuild[(int) pos.x][(int) pos.y] = false;
+						if (map.schematic.pipesToBuild[(int) pos.x][(int) pos.y])
+						{
+							map.getTile(pos).setPiped(false);
+							map.schematic.pipesToBuild[(int) pos.x][(int) pos.y] = false;
+						} else
+						{
+							map.schematic.pipesToDestroy[(int) pos.x][(int) pos.y] = true;
+						}
 					}
 				} else if (Simulation.map.schematic.getBuilding((int) pos.x, (int) pos.y).built)
 					Simulation.map.schematic.buildings[(int) pos.x][(int) pos.y] = new Building((int) pos.x,

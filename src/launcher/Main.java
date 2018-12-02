@@ -44,11 +44,12 @@ public class Main
 		t = new TextureLoader();
 		FL = new FontLoader();
 		// Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		// int width = (int)screenSize.getWidth();
-		// int height = (int)screenSize.getHeight();
+		// int width = (int) screenSize.getWidth();
+		// int height = (int) screenSize.getHeight();
 		int width = 1200;
 		int height = 1000;
 		f = new Frame(width, height, 0, 0);
+		f.setLocation(600, 0);
 		store = new Store();
 	}
 }

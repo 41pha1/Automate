@@ -15,7 +15,7 @@ public class MenuBar
 
 	public MenuBar()
 	{
-		layers = new Button(130, Frame.undecorated ? 3 : 33, 0, 0, 32, 32, 8);
+		layers = new Button(130, 3, 0, 0, 32, 32, 8);
 		layers.showBorder = false;
 		layers.showOverlay = false;
 		showPipes = false;
@@ -38,6 +38,7 @@ public class MenuBar
 		int width = Frame.width;
 		g.setColor(new Color(0, 0, 0, 200));
 		g.fillRoundRect(100, y - 40, width - 200, 80, 80, 80);
+		layers.y = Frame.undecorated ? 3 : 33;
 		layers.render(g);
 		if (layers.isPressed())
 		{

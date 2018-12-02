@@ -12,7 +12,7 @@ public class Schematic implements Serializable
 	private static final long serialVersionUID = 1L;
 	public Building[][] buildings;
 	public Building[][] save;
-	public boolean[][] pipesToBuild;
+	public boolean[][] pipesToBuild, pipesToDestroy;
 
 	public boolean saved = false;
 	int w, h;
@@ -24,13 +24,15 @@ public class Schematic implements Serializable
 		buildings = new Building[w][h];
 		save = new Building[w][h];
 		pipesToBuild = new boolean[w][h];
+		pipesToDestroy = new boolean[w][h];
 
 		for (int x = 0; x < w; x++)
 		{
 			for (int y = 0; y < h; y++)
 			{
-				save[x][y] = new Building(0, 0);
+				save[x][y] = new Building(x, y);
 				pipesToBuild[x][y] = false;
+				pipesToDestroy[x][y] = false;
 			}
 		}
 	}
@@ -95,11 +97,11 @@ public class Schematic implements Serializable
 		saved = true;
 	}
 
-	public void render(Graphics2D g)
+	public void render(Graphics2D g, int xoff, int yoff, int xmax, int ymax)
 	{
-		for (int x = 0; x < w; x++)
+		for (int x = xoff; x < xmax; x++)
 		{
-			for (int y = 0; y < h; y++)
+			for (int y = yoff; y < ymax; y++)
 			{
 				if (buildings[x][y].built)
 				{
@@ -112,6 +114,26 @@ public class Schematic implements Serializable
 					if (Animator.updates / 4 % 2 == 0)
 						Simulation.map.tiles[x][y].b.renderHighlighted(g);
 				}
+			}
+		}
+	}
+
+	public void renderPipes(Graphics2D g, int xoff, int yoff, int xmax, int ymax)
+	{
+
+		for (int x = xoff; x < xmax; x++)
+		{
+			for (int y = yoff; y < ymax; y++)
+			{
+				if (!pipesToDestroy[x][y])
+					Simulation.map.tiles[x][y].renderPipes(g);
+			}
+		}
+		for (int x = xoff; x < xmax; x++)
+		{
+			for (int y = yoff; y < ymax; y++)
+			{
+				Simulation.map.tiles[x][y].renderTransparent(g);
 			}
 		}
 	}

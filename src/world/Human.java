@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import animation.Animator;
 import data.Tank;
@@ -30,6 +31,8 @@ public class Human extends Entity implements Serializable
 	public int[] inventory;
 	public String name;
 	public Tank O;
+	public boolean dumpInventory;
+	public float carryCapacity;
 
 	public Human(float x, float y, int id, int d)
 	{
@@ -38,6 +41,8 @@ public class Human extends Entity implements Serializable
 		name = NameGenerator.getName();
 		t = new Tasks(id);
 		inventory = new int[Cargo.DIFFERENTCARGOS];
+		carryCapacity = 10;
+		dumpInventory = true;
 		for (int j = 0; j < inventory.length; j++)
 		{
 			inventory[j] = 0;
@@ -124,11 +129,7 @@ public class Human extends Entity implements Serializable
 
 	public void moveTo(Vector2D des)
 	{
-		boolean active = !goToNearestEdge();
-		if (!active)
-		{
-			active = !goTo(des);
-		}
+		boolean active = !goTo(des);
 		if (!active)
 		{
 			int x = Math.round(this.x);
@@ -282,6 +283,52 @@ public class Human extends Entity implements Serializable
 		return closestCargo;
 	}
 
+	public ArrayList<Vector2D> allBuildingsToGatherFor()
+	{
+		ArrayList<Vector2D> allBuildings = new ArrayList<Vector2D>();
+		for (int x = 0; x < Simulation.map.width; x++)
+		{
+			for (int y = 0; y < Simulation.map.height; y++)
+			{
+				if (needsCargo(whatToDoWithBuilding(x, y)))
+					allBuildings.add(new Vector2D(x, y));
+			}
+		}
+		return allBuildings;
+	}
+
+	public boolean dumpInventory()
+	{
+		boolean cargoInInventory = false;
+		for (int i : inventory)
+		{
+			if (i > 0)
+				cargoInInventory = true;
+		}
+		if (!cargoInInventory)
+			return true;
+
+		destination = searchFor(5, 0, 0, Simulation.map.width, Simulation.map.height);
+		if (destination == null)
+		{
+			taskInfo = "No storage found!";
+			return false;
+		} else
+		{
+			moveTo(destination);
+			if (!busy)
+			{
+				for (int i = 0; i < Cargo.DIFFERENTCARGOS; i++)
+				{
+					Simulation.map.getTile(destination).b.getInventory()[i] += inventory[i];
+					inventory[i] = 0;
+				}
+				return true;
+			}
+			return false;
+		}
+	}
+
 	public Building searchForBuildingToBuild()
 	{
 		if (!Simulation.map.schematic.saved)
@@ -289,6 +336,34 @@ public class Human extends Entity implements Serializable
 		int shortestX = -1;
 		int shortestY = -1;
 		float shortestD = Float.MAX_VALUE;
+		for (int x = 0; x < Simulation.map.width; x++)
+		{
+			for (int y = 0; y < Simulation.map.height; y++)
+			{
+				if (whatToDoWithBuilding(x, y) != 0 && materialGatheredFor(x, y))
+				{
+					float D = Math.abs(this.x - x) + Math.abs(this.y - y);
+					if (D < shortestD)
+					{
+						shortestD = D;
+						shortestX = x;
+						shortestY = y;
+					}
+				}
+			}
+		}
+		if (shortestX + shortestY != -2)
+		{
+			int i = whatToDoWithBuilding(shortestX, shortestY);
+			if (i == 4 || i == 5)
+			{
+				return new Building(shortestX, shortestY);
+			} else
+				return Simulation.map.schematic.save[shortestX][shortestY];
+		}
+		shortestX = -1;
+		shortestY = -1;
+		shortestD = Float.MAX_VALUE;
 		for (int x = 0; x < Simulation.map.width; x++)
 		{
 			for (int y = 0; y < Simulation.map.height; y++)
@@ -307,7 +382,8 @@ public class Human extends Entity implements Serializable
 		}
 		if (shortestX + shortestY != -2)
 		{
-			if (whatToDoWithBuilding(shortestX, shortestY) == 4)
+			int i = whatToDoWithBuilding(shortestX, shortestY);
+			if (i == 4 || i == 5)
 			{
 				return new Building(shortestX, shortestY);
 			} else
@@ -384,16 +460,200 @@ public class Human extends Entity implements Serializable
 		return false;
 	}
 
-	public boolean gatherCargo(Building b, int whatToDoWithBuilding)
+	public boolean materialsForAllBuildingsGathered()
+	{
+		int[] totalPrice = new int[Cargo.DIFFERENTCARGOS];
+		for (Vector2D v : allBuildingsToGatherFor())
+		{
+			int[] price = getPrice(v);
+			for (int i = 0; i < price.length; i++)
+			{
+				totalPrice[i] += price[i];
+			}
+		}
+		for (int i = 0; i < inventory.length; i++)
+		{
+			if (inventory[i] < totalPrice[i])
+				return false;
+		}
+		return true;
+	}
+
+	public int[] getPrice(Vector2D v)
+	{
+		return getPrice((int) v.x, (int) v.y);
+	}
+
+	public int[] getPrice(Building b)
+	{
+		return getPrice(b.x, b.y);
+	}
+
+	public void print(int[] is)
+	{
+		for (int i : is)
+			System.out.print(i + ", ");
+		System.out.println("!");
+	}
+
+	public int[] getPrice(int x, int y)
+	{
+		int wtdwb = whatToDoWithBuilding(x, y);
+		int[] totalPrice = new int[Cargo.DIFFERENTCARGOS];
+		if ((wtdwb == 4 || wtdwb == 1) && !Simulation.map.getTile(x, y).b.built)
+		{
+			int[] price = Simulation.map.schematic.save[x][y].getPrice();
+			for (int i = 0; i < Cargo.DIFFERENTCARGOS; i++)
+			{
+				totalPrice[i] += price[i];
+			}
+		}
+		if (wtdwb == 4)
+		{
+			int[] price = new StorePipe().getPrice();
+			for (int i = 0; i < Cargo.DIFFERENTCARGOS; i++)
+			{
+				totalPrice[i] += price[i];
+			}
+		}
+		return totalPrice;
+	}
+
+	public boolean materialGatheredFor(int x, int y)
+	{
+		int[] price;
+		Building b = Simulation.map.schematic.save[x][y];
+		if (b.getID() != -1)
+			price = b.getPrice();
+		else
+			price = new StorePipe().getPrice();
+
+		for (int i = 0; i < inventory.length; i++)
+		{
+			if (inventory[i] < price[i])
+				return false;
+		}
+		return true;
+	}
+
+	public boolean allMaterialsGatheredForAll(Vector2D pos)
+	{
+		int ID = Simulation.map.schematic.save[(int) pos.x][(int) pos.y].getID();
+		int[] totalPrice = new int[Cargo.DIFFERENTCARGOS];
+
+		for (Vector2D v : allBuildingsToGatherFor())
+		{
+			if (Simulation.map.schematic.save[(int) v.x][(int) v.y].getID() == ID)
+			{
+				int[] price;
+				if (ID != -1)
+					price = Simulation.map.schematic.save[(int) v.x][(int) v.y].getPrice();
+				else
+					price = new StorePipe().getPrice();
+
+				for (int i = 0; i < price.length; i++)
+				{
+					totalPrice[i] += price[i];
+				}
+			}
+		}
+		for (int i = 0; i < inventory.length; i++)
+		{
+			if (inventory[i] < totalPrice[i])
+				return false;
+		}
+		return true;
+	}
+
+	public boolean gatherAllCargo(Building b)
+	{
+		boolean enough = gatherCargo(b);
+		if (enough)
+		{
+			dumpInventory = true;
+			Vector2D storage = searchFor(5, 0, 0, Simulation.map.width, Simulation.map.height);
+			if (arrivedAt(storage) && !materialsForAllBuildingsGathered())
+			{
+				for (Vector2D v : allBuildingsToGatherFor())
+				{
+					if (!allMaterialsGatheredForAll(v))
+					{
+						int[] price = getPrice(v);
+
+						for (int i = 0; i < price.length; i++)
+						{
+							if (price[i] > 0)
+							{
+								int added = addToInventory(i, price[i]);
+								Simulation.map.getTile(storage).b.getInventory()[i] -= added;
+								if (added == 0)
+									return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return enough;
+	}
+
+	public boolean needsCargo(int wtdwb)
+	{
+		return (wtdwb == 1 || wtdwb == 4);
+	}
+
+	public boolean arrivedAt(Vector2D des)
+	{
+		float x = des.x;
+		float y = des.y;
+		float dx = this.x - x - 0.5f;
+		float dy = this.y - y - 0.5f;
+		float d = 0.5f;
+		if (-dy - 0.05f > d)
+		{
+			return false;
+		} else if (dy > d)
+		{
+			return false;
+		} else if (dx > d)
+		{
+			return false;
+		} else if (-dx - 0.05f > d)
+		{
+			return false;
+		} else
+			return true;
+	}
+
+	public int addToInventory(int i, int a)
+	{
+		float remaining = carryCapacity - calculateWeightOfInventory();
+		int spaces = (int) (remaining / (Cargo.getWeight(i) * a));
+
+		if (spaces >= a)
+		{
+			inventory[i] += a;
+			return a;
+		}
+		inventory[i] += spaces;
+		return spaces;
+	}
+
+	public float calculateWeightOfInventory()
+	{
+		float totalWeight = 0;
+		for (int i = 0; i < inventory.length; i++)
+		{
+			totalWeight += Cargo.getWeight(i) * inventory[i];
+		}
+		return totalWeight;
+	}
+
+	public boolean gatherCargo(Building b)
 	{
 		moving = false;
-		busy = moving;
-		int[] price;
-		if (whatToDoWithBuilding == 4)
-		{
-			price = new StorePipe().getPrice();
-		} else
-			price = b.getPrice();
+		busy = false;
+		int[] price = getPrice(b);
 
 		int j = 0;
 		boolean AllMaterialsGathered = true;
@@ -420,6 +680,9 @@ public class Human extends Entity implements Serializable
 		} else
 		{
 			moveTo(destination);
+			if (dumpInventory)
+				if (dumpInventory())
+					dumpInventory = false;
 			if (!busy)
 			{
 				waitingForMaterials = true;
@@ -451,12 +714,12 @@ public class Human extends Entity implements Serializable
 		Building MB = Simulation.map.tiles[x][y].b;
 		Building SB = Simulation.map.schematic.save[x][y];
 		if ((MB.compare(SB) || ((!MB.built) && (!SB.built))))
-			if (!Simulation.map.schematic.pipesToBuild[x][y])
-			{
+			if (!Simulation.map.schematic.pipesToBuild[x][y] && !Simulation.map.schematic.pipesToDestroy[x][y])
 				return 0; // DoNothing
-			}
 		if (Simulation.map.schematic.pipesToBuild[x][y])
 			return 4; // BuildPipes
+		if (Simulation.map.schematic.pipesToDestroy[x][y])
+			return 5; // DestroyPipes
 		if (!MB.built && SB.built)
 			return 1; // Build
 		if (MB.built && !SB.built)
@@ -464,6 +727,7 @@ public class Human extends Entity implements Serializable
 		if (MB.built && SB.built)
 			return 3; // Change
 		return 0;
+
 	}
 
 	public void build(int i)
@@ -492,8 +756,8 @@ public class Human extends Entity implements Serializable
 				return;
 			if (!busy)
 			{
-				if (whatToDoWithBuilding == 1 || whatToDoWithBuilding == 4)
-					gatherCargo(toBuild, whatToDoWithBuilding);
+				if (needsCargo(whatToDoWithBuilding))
+					busy = !gatherAllCargo(toBuild);
 				if (!busy)
 				{
 					destination = new Vector2D(toBuild.x, toBuild.y);
@@ -503,13 +767,14 @@ public class Human extends Entity implements Serializable
 						turnTowards(destination);
 						if (whatToDoWithBuilding == 1) // Build
 						{
-							int[] price = toBuild.getPrice();
+							int[] price = getPrice(toBuild.x, toBuild.y);
 							for (int j = 0; j < Cargo.DIFFERENTCARGOS; j++)
 							{
 								inventory[j] -= price[j];
 							}
-							Simulation.map.tiles[(int) destination.x][(int) destination.y].b = Simulation.map.schematic.save[(int) destination.x][(int) destination.y];
-							Simulation.map.tiles[(int) destination.x][(int) destination.y].b.place();
+							Simulation.map.getTile(
+									destination).b = Simulation.map.schematic.save[(int) destination.x][(int) destination.y];
+							Simulation.map.getTile(destination).b.place();
 						} else if (whatToDoWithBuilding == 2) // Destroy
 						{
 							int[] refund = Simulation.map.tiles[(int) destination.x][(int) destination.y].b.getPrice();
@@ -517,19 +782,23 @@ public class Human extends Entity implements Serializable
 							{
 								inventory[j] += refund[j];
 							}
-							Simulation.pm.addDestructionParticles(
-									Simulation.map.tiles[(int) destination.x][(int) destination.y].b);
-							Simulation.map.tiles[(int) destination.x][(int) destination.y].b = new Building(
-									(int) destination.x, (int) destination.y);
+							Simulation.pm.addDestructionParticles(Simulation.map.getTile(destination).b);
+							Simulation.map.getTile(destination).b = new Building((int) destination.x,
+									(int) destination.y);
 						} else if (whatToDoWithBuilding == 3) // Change
 						{
-							Simulation.map.tiles[(int) destination.x][(int) destination.y].b
-									.setCurvature(toBuild.getCurvature());
-							Simulation.map.tiles[(int) destination.x][(int) destination.y].b.dir = toBuild.dir;
+							Simulation.map.getTile(destination).b.setCurvature(toBuild.getCurvature());
+							Simulation.map.getTile(destination).b.dir = toBuild.dir;
 						} else if (whatToDoWithBuilding == 4) // Build Pipe
 						{
 							Simulation.map.schematic.pipesToBuild[(int) destination.x][(int) destination.y] = false;
 							inventory[Cargo.PIPE]--;
+						} else if (whatToDoWithBuilding == 5) // DestroyPipe
+						{
+							Simulation.map.getTile(destination).setPiped(false);
+							Simulation.map.schematic.pipesToDestroy[(int) destination.x][(int) destination.y] = false;
+							inventory[Cargo.PIPE]++;
+							Simulation.pm.addDestructionParticles(destination.x, destination.y);
 						}
 					}
 				}
