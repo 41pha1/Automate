@@ -5,7 +5,7 @@ public class Animator
 	public static int updates = 0;
 	public static int fastAnimation = 0;
 	public static int veryFastAnimation = 0;
-	public static int dayNight = 0;
+	public static int dayNight = 90;
 	public static float dn = 0;
 	public static float u = 0;
 	public static float f = 0;

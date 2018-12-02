@@ -35,7 +35,7 @@ public class MenuBar
 		g.setColor(Color.WHITE);
 		Font font = new Font("EthnocentricRg-Regular", Font.PLAIN, 35);
 		g.setFont(font);
-		String text = "Day " + 1 + Animator.dayNight / 360;
+		String text = "Day " + (1 + (Animator.dayNight / 360));
 		int width = g.getFontMetrics().stringWidth(text);
 		g.drawString(text, x - width / 2, y);
 
