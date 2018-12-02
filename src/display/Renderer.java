@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import animation.Animator;
 import game.Simulation;
 import gui.Console;
 import gui.Gui;
@@ -31,10 +32,11 @@ public class Renderer
 		try
 		{
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("res/ethnocentric.ttf")));
+			Font font = Font.createFont(Font.TRUETYPE_FONT, new File("res/ethnocentric.ttf"));
+			ge.registerFont(font);
 		} catch (IOException | FontFormatException e)
 		{
-			System.out.println("tlskjtlkj");
+
 		}
 	}
 
@@ -47,9 +49,17 @@ public class Renderer
 		reset(g);
 		Simulation.map.Render(g);
 		Simulation.pm.render(g);
+		renderDayNight(g);
 		renderGuis(g);
 		if (Simulation.intro > 100)
 			MenuBar.render(g);
+	}
+
+	public static void renderDayNight(Graphics2D g)
+	{
+		float brightness = (float) Math.cos(Math.toRadians(Animator.dayNight)) / 3 + 0.5f;
+		g.setColor(new Color(0, 0, 0, brightness));
+		g.fillRect(0, 0, Frame.width, Frame.height);
 	}
 
 	public static void renderGuis(Graphics2D g)
@@ -87,7 +97,7 @@ public class Renderer
 				g.setColor(new Color(255, 255, 255, Math.max(255 - ((i - 5) * 16), 1)));
 			} else
 				g.setColor(new Color(255, 255, 255, 255));
-			g.setFont(new Font("Ethnocentric", Font.PLAIN, 72));
+			g.setFont(new Font("EthnocentricRg-Regular", Font.PLAIN, 72));
 			String text = "MARS, 2100";
 			int width = g.getFontMetrics().stringWidth(text);
 			int height = g.getFontMetrics().getHeight();

@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
+import animation.Animator;
 import display.Frame;
 import launcher.Main;
 
@@ -29,6 +30,24 @@ public class MenuBar
 		g.drawString("" + Main.fps, x, y);
 	}
 
+	public static void showDay(Graphics2D g, int x, int y)
+	{
+		g.setColor(Color.WHITE);
+		Font font = new Font("EthnocentricRg-Regular", Font.PLAIN, 35);
+		g.setFont(font);
+		String text = "Day " + 1 + Animator.dayNight / 360;
+		int width = g.getFontMetrics().stringWidth(text);
+		g.drawString(text, x - width / 2, y);
+
+		int arc = Animator.dayNight % 360;
+		if (arc > 180)
+			arc = 360 - arc;
+		int start = Animator.dayNight % 360;
+		start = start > 180 ? -Animator.dayNight % 180 : 0;
+		g.fillArc(x + width - 60, y - 25, 25, 25, 90 + start * 2, -arc * 2);
+		g.drawOval(x + width - 60, y - 25, 25, 25);
+	}
+
 	public static void render(Graphics2D g)
 	{
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -45,5 +64,6 @@ public class MenuBar
 			showPipes = !showPipes;
 		}
 		showFPS(g, width - 160, y + 30);
+		showDay(g, width / 2, y + 33);
 	}
 }

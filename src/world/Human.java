@@ -41,7 +41,7 @@ public class Human extends Entity implements Serializable
 		name = NameGenerator.getName();
 		t = new Tasks(id);
 		inventory = new int[Cargo.DIFFERENTCARGOS];
-		carryCapacity = 30;
+		carryCapacity = 10;
 		dumpInventory = true;
 		for (int j = 0; j < inventory.length; j++)
 		{
@@ -856,6 +856,11 @@ public class Human extends Entity implements Serializable
 			{
 				if (needsCargo(whatToDoWithBuilding))
 					busy = !gatherAllCargo(toBuild);
+				if (whatToDoWithBuilding == 2 || whatToDoWithBuilding == 5)
+				{
+					if (calculateWeightOfInventory() > carryCapacity)
+						dumpInventory();
+				}
 				if (!busy)
 				{
 					destination = new Vector2D(toBuild.x, toBuild.y);

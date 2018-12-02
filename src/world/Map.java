@@ -358,7 +358,5 @@ public class Map implements Serializable
 			renderBuildings(g, xoff, yoff, xmax, ymax);
 			renderBuildingsCargo(g, xoff, yoff, xmax, ymax);
 		}
-		if (getTile(selectedBuilding).b.built)
-			getTile(selectedBuilding).b.renderHighlighted(g);
 	}
 }
