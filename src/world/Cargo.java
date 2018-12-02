@@ -11,11 +11,10 @@ import utility.Vector2D;
 public class Cargo implements Serializable
 {
 	private static final long serialVersionUID = 1302781432064090240L;
-	public int x;
 	public static final int COAL = 1, IRON_ORE = 2, STONE = 3, LOG = 4, IRON = 5, MOTOR = 6, PROCESSOR = 7, RUBBER = 8,
 			COPPER = 9, WIRE = 10, CABLE = 11, COIL = 12, COPPER_ORE = 13, PIPE = 14;
 	public static int DIFFERENTCARGOS = 15;
-	public int y;
+	public float x, y;
 	float vx, vy;
 	public int ID, id;
 	boolean arrived = true;
@@ -32,10 +31,10 @@ public class Cargo implements Serializable
 		inMap = b;
 	}
 
-	public Cargo(int x, int y, int ID)
+	public Cargo(float x2, float y2, int ID)
 	{
-		this.x = x;
-		this.y = y;
+		this.x = x2;
+		this.y = y2;
 		this.vx = 0;
 		this.vy = 0;
 		this.ID = ID;

@@ -67,10 +67,10 @@ public class Generator extends Building
 		if (TimeRemaining <= 0)
 		{
 			TimeRemaining = TimePerReaktion;
-			if (O.amount >= 2 && H.amount >= 1 && H2O.capacity - H2O.amount >= 1)
+			if (O.amount >= 1 && H.amount >= 2 && H2O.capacity - H2O.amount >= 1)
 			{
-				O.amount -= 2;
-				H.amount -= 1;
+				O.amount -= 1;
+				H.amount -= 2;
 				H2O.amount++;
 				Energy += EnergyPerReaktion;
 			}

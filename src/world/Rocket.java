@@ -23,8 +23,8 @@ public class Rocket extends Building
 
 	public Rocket(int x, int y)
 	{
-		H = new Tank(0, 50000, 100000);
-		O = new Tank(1, 50000, 200000);
+		H = new Tank(0, 100000, 200000);
+		O = new Tank(1, 50000, 100000);
 		sb = new ScrollBar(0, 0, 12, 120);
 		this.x = x;
 		this.y = y;

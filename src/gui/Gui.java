@@ -81,6 +81,13 @@ public class Gui
 		}
 	}
 
+	public static void showInventory(Human h, Graphics2D g, int dx, int dy)
+	{
+		showInventory(h.inventory, g, dx, dy);
+		g.setColor(Color.WHITE);
+		g.drawString("" + h.calculateWeightOfInventory(), 10, 150);
+	}
+
 	public static void showInventory(int[] inventory, Graphics2D g, int dx, int dy)
 	{
 		ArrayList<Vector2D> inv = new ArrayList<Vector2D>();
@@ -193,7 +200,7 @@ public class Gui
 			sb.render(b);
 			if (tasks.pressed)
 				inventory.pressed = false;
-			Gui.showInventory(h.getInventory(), b, 0, 50 + yoff);
+			Gui.showInventory(h, b, 0, 50 + yoff);
 			b.setColor(Color.WHITE);
 			b.drawLine(235, 10, 235, 140);
 			h.O.render(b, 260, 10);

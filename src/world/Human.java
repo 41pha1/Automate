@@ -41,7 +41,7 @@ public class Human extends Entity implements Serializable
 		name = NameGenerator.getName();
 		t = new Tasks(id);
 		inventory = new int[Cargo.DIFFERENTCARGOS];
-		carryCapacity = 10;
+		carryCapacity = 30;
 		dumpInventory = true;
 		for (int j = 0; j < inventory.length; j++)
 		{
@@ -297,6 +297,28 @@ public class Human extends Entity implements Serializable
 		return allBuildings;
 	}
 
+	public ArrayList<Vector2D> sortByDistance(ArrayList<Vector2D> vs)
+	{
+		ArrayList<Vector2D> sorted = new ArrayList<Vector2D>();
+		while (vs.size() > 0)
+		{
+			int closest = 0;
+			float closestD = Float.MAX_VALUE;
+			for (int i = 0; i < vs.size(); i++)
+			{
+				float D = Math.abs(this.x - vs.get(i).x) + Math.abs(this.y - vs.get(i).y);
+				if (D < closestD)
+				{
+					closestD = D;
+					D = i;
+				}
+			}
+			sorted.add(vs.get(closest));
+			vs.remove(closest);
+		}
+		return sorted;
+	}
+
 	public boolean dumpInventory()
 	{
 		boolean cargoInInventory = false;
@@ -308,7 +330,9 @@ public class Human extends Entity implements Serializable
 		if (!cargoInInventory)
 			return true;
 
-		destination = searchFor(5, 0, 0, Simulation.map.width, Simulation.map.height);
+		destination = searchForBuildingToDumpInventoryAt();
+		if (destination.x == -1)
+			destination = searchFor(5, 0, 0, Simulation.map.width, Simulation.map.height);
 		if (destination == null)
 		{
 			taskInfo = "No storage found!";
@@ -320,8 +344,21 @@ public class Human extends Entity implements Serializable
 			{
 				for (int i = 0; i < Cargo.DIFFERENTCARGOS; i++)
 				{
-					Simulation.map.getTile(destination).b.getInventory()[i] += inventory[i];
-					inventory[i] = 0;
+					if (Simulation.map.getTile(destination).b.getID() == 5)
+					{
+						Simulation.map.getTile(destination).b.getInventory()[i] += inventory[i];
+						inventory[i] = 0;
+					} else
+					{
+						for (int j = 0; j < getPrice(destination)[i]; j++)
+						{
+							if (inventory[i] > 0)
+							{
+								Simulation.map.cargo.add(new Cargo(destination.x, destination.y, i));
+								inventory[i]--;
+							}
+						}
+					}
 				}
 				return true;
 			}
@@ -390,6 +427,36 @@ public class Human extends Entity implements Serializable
 				return Simulation.map.schematic.save[shortestX][shortestY];
 		}
 		return null;
+	}
+
+	public Vector2D searchForBuildingToDumpInventoryAt()
+	{
+		Vector2D needsCargo = new Vector2D(-1, -1);
+		float shortestD = Float.MAX_VALUE;
+		for (int x = 0; x < Simulation.map.width; x++)
+		{
+			for (int y = 0; y < Simulation.map.height; y++)
+			{
+				if (Simulation.map.schematic.save[x][y].built && !Simulation.map.getTile(x, y).b.built)
+				{
+					int[] price = getPrice(x, y);
+					int needs = 0;
+					for (int i = 0; i < price.length; i++)
+					{
+						if (price[i] > 0 && inventory[i] > 0)
+							needs++;
+					}
+					float D = Math.abs(this.x - x) + Math.abs(this.y - y);
+					if (needs > 0 && D < shortestD)
+					{
+						shortestD = D;
+						needsCargo.x = x;
+						needsCargo.y = y;
+					}
+				}
+			}
+		}
+		return needsCargo;
 	}
 
 	public Vector2D searchFor(int ID, int x1, int y1, int x2, int y2)
@@ -516,6 +583,11 @@ public class Human extends Entity implements Serializable
 				totalPrice[i] += price[i];
 			}
 		}
+		for (Cargo c : Simulation.map.cargo)
+		{
+			if (c.x == x && c.y == y)
+				totalPrice[c.ID]--;
+		}
 		return totalPrice;
 	}
 
@@ -574,7 +646,7 @@ public class Human extends Entity implements Serializable
 			Vector2D storage = searchFor(5, 0, 0, Simulation.map.width, Simulation.map.height);
 			if (arrivedAt(storage) && !materialsForAllBuildingsGathered())
 			{
-				for (Vector2D v : allBuildingsToGatherFor())
+				for (Vector2D v : sortByDistance(allBuildingsToGatherFor()))
 				{
 					if (!allMaterialsGatheredForAll(v))
 					{
@@ -672,17 +744,19 @@ public class Human extends Entity implements Serializable
 		}
 		if (j == 0)
 			return true; // free Building
+
+		if (dumpInventory)
+			if (dumpInventory())
+				dumpInventory = false;
+
 		destination = searchFor(5, 0, 0, Simulation.map.width, Simulation.map.height);
 		if (destination == null)
 		{
 			taskInfo = "No storage found!";
 			return false;
-		} else
+		} else if (!busy)
 		{
 			moveTo(destination);
-			if (dumpInventory)
-				if (dumpInventory())
-					dumpInventory = false;
 			if (!busy)
 			{
 				waitingForMaterials = true;
@@ -692,9 +766,11 @@ public class Human extends Entity implements Serializable
 					Building storage = Simulation.map.getTile((int) destination.x, (int) destination.y).b;
 					if (price[i] > 0 && storage.getInventory()[i] > 0 && price[i] > inventory[i])
 					{
-						storage.getInventory()[i]--;
-						inventory[i]++;
+						int k = addToInventory(i, 1);
+						storage.getInventory()[i] -= k;
 						waitingForMaterials = false;
+						if (k == 0)
+							return true;
 						return false;
 					}
 				}
@@ -728,6 +804,28 @@ public class Human extends Entity implements Serializable
 			return 3; // Change
 		return 0;
 
+	}
+
+	public void construct(Building toBuild)
+	{
+		int[] totalPrice = Simulation.map.schematic.save[toBuild.x][toBuild.y].getPrice();
+		int[] price = getPrice(toBuild.x, toBuild.y);
+		int[] cargos = new int[Cargo.DIFFERENTCARGOS];
+
+		for (int j = 0; j < cargos.length; j++)
+		{
+			cargos[j] = totalPrice[j] - price[j];
+		}
+		if (useCargo(toBuild.x, toBuild.y, cargos))
+		{
+			for (int j = 0; j < Cargo.DIFFERENTCARGOS; j++)
+			{
+				inventory[j] -= price[j];
+			}
+			Simulation.map
+					.getTile(destination).b = Simulation.map.schematic.save[(int) destination.x][(int) destination.y];
+			Simulation.map.getTile(destination).b.place();
+		}
 	}
 
 	public void build(int i)
@@ -767,14 +865,7 @@ public class Human extends Entity implements Serializable
 						turnTowards(destination);
 						if (whatToDoWithBuilding == 1) // Build
 						{
-							int[] price = getPrice(toBuild.x, toBuild.y);
-							for (int j = 0; j < Cargo.DIFFERENTCARGOS; j++)
-							{
-								inventory[j] -= price[j];
-							}
-							Simulation.map.getTile(
-									destination).b = Simulation.map.schematic.save[(int) destination.x][(int) destination.y];
-							Simulation.map.getTile(destination).b.place();
+							construct(toBuild);
 						} else if (whatToDoWithBuilding == 2) // Destroy
 						{
 							int[] refund = Simulation.map.tiles[(int) destination.x][(int) destination.y].b.getPrice();
@@ -805,6 +896,29 @@ public class Human extends Entity implements Serializable
 			}
 		}
 		busy = moving || waitingForMaterials;
+	}
+
+	public boolean useCargo(int x, int y, int[] cargos)
+	{
+		for (int i = 0; i < Simulation.map.cargo.size(); i++)
+		{
+			Cargo c = Simulation.map.cargo.get(i);
+			if (c.x == x && c.y == y && cargos[c.ID] > 0)
+			{
+				cargos[c.ID]--;
+				Simulation.map.cargo.remove(c);
+				i--;
+			}
+		}
+		for (int i : cargos)
+		{
+			if (i > 0)
+			{
+				System.out.println("not enough");
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public void chopWood(int i)
@@ -1068,6 +1182,6 @@ public class Human extends Entity implements Serializable
 			y -= speed;
 		if (dir == 3 && moving)
 			x += speed;
-		checkForCB();
+		// checkForCB();
 	}
 }
