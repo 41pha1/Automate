@@ -15,7 +15,7 @@ public class Main
 	public static Store store;
 	public static TextureLoader t;
 	public static FontLoader FL;
-
+	//do more comments
 	public static void main(String[] args)
 	{
 		long t = System.currentTimeMillis();
