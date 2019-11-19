@@ -12,19 +12,21 @@ import texture.TextureLoader;
 public class Tile implements Serializable
 {
 	private static final long serialVersionUID = 6302849209085209706L;
-	public int x, y;
+	public int x, y, z;
 	public int ID;
 	public Building b;
 	public Res r;
 	public int tex;
 	public int pipeTexture = 1;
 	public boolean piped;
+	public int slope;
 	int ix, iy;
 
-	public Tile(int x, int y, int ID)
+	public Tile(int x, int y, int z, int ID)
 	{
 		this.x = x;
 		this.y = y;
+		this.z = z;
 		ix = 0;
 		tex = (int) (Math.random() * 4);
 		iy = 0;
@@ -37,7 +39,7 @@ public class Tile implements Serializable
 	{
 		updateIsometric();
 		if (onScreen())
-			g.drawImage(TextureLoader.grounds[0][0][tex], ix, iy, null);
+			g.drawImage(TextureLoader.grounds[0][slope][tex], ix, iy, 130, 130, null);
 	}
 
 	public void updateIsometric()
@@ -46,7 +48,7 @@ public class Tile implements Serializable
 		float x = (Simulation.map.t.getX() + this.x) * size;
 		float y = (Simulation.map.t.getY() + this.y) * size;
 		ix = (int) (x - y);
-		iy = (int) ((x + y) / 2f);
+		iy = (int) ((x + y) / 2f) - z * 20;
 	}
 
 	public void render(Graphics2D g, int scale)
@@ -54,6 +56,23 @@ public class Tile implements Serializable
 		updateIsometric();
 		if (onScreen())
 			g.drawImage(TextureLoader.grounds[0][0][tex], ix, iy, scale, scale, null);
+	}
+
+	public void updateTerrainTexture()
+	{
+		int[] heights = new int[4];
+		for (int i = 0; i < 4; i++)
+			heights[i] = Simulation.map.getNextTile(x, y, i, 1).z;
+
+		int sameHeights = 0;
+		for (int i = 0; i < 4; i++)
+			sameHeights += heights[i] == z ? 1 : 0;
+
+		switch (sameHeights)
+		{
+			case 4:
+
+		}
 	}
 
 	public boolean onScreen()
@@ -103,14 +122,10 @@ public class Tile implements Serializable
 	public void updatePipes()
 	{
 		pipeTexture = TextureLoader.getPipeTexture(x, y);
-		Simulation.map.getNextTile(x, y, 0, 1).pipeTexture = TextureLoader
-				.getPipeTexture(Simulation.map.getNextTile(x, y, 0, 1).x, Simulation.map.getNextTile(x, y, 0, 1).y);
-		Simulation.map.getNextTile(x, y, 1, 1).pipeTexture = TextureLoader
-				.getPipeTexture(Simulation.map.getNextTile(x, y, 1, 1).x, Simulation.map.getNextTile(x, y, 1, 1).y);
-		Simulation.map.getNextTile(x, y, 2, 1).pipeTexture = TextureLoader
-				.getPipeTexture(Simulation.map.getNextTile(x, y, 2, 1).x, Simulation.map.getNextTile(x, y, 2, 1).y);
-		Simulation.map.getNextTile(x, y, 3, 1).pipeTexture = TextureLoader
-				.getPipeTexture(Simulation.map.getNextTile(x, y, 3, 1).x, Simulation.map.getNextTile(x, y, 3, 1).y);
+		Simulation.map.getNextTile(x, y, 0, 1).pipeTexture = TextureLoader.getPipeTexture(Simulation.map.getNextTile(x, y, 0, 1).x, Simulation.map.getNextTile(x, y, 0, 1).y);
+		Simulation.map.getNextTile(x, y, 1, 1).pipeTexture = TextureLoader.getPipeTexture(Simulation.map.getNextTile(x, y, 1, 1).x, Simulation.map.getNextTile(x, y, 1, 1).y);
+		Simulation.map.getNextTile(x, y, 2, 1).pipeTexture = TextureLoader.getPipeTexture(Simulation.map.getNextTile(x, y, 2, 1).x, Simulation.map.getNextTile(x, y, 2, 1).y);
+		Simulation.map.getNextTile(x, y, 3, 1).pipeTexture = TextureLoader.getPipeTexture(Simulation.map.getNextTile(x, y, 3, 1).x, Simulation.map.getNextTile(x, y, 3, 1).y);
 	}
 
 	public void update()
